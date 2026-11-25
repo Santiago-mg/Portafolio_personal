@@ -1,7 +1,6 @@
 'use client';
 
-import CodePortrait from '@/components/CodePortrait';
-import DrawStroke from '@/components/fx/DrawStroke';
+import { useEffect, useRef } from 'react';
 import { useSite } from '@/components/site/SiteProvider';
 
 const STAGES: [string, string, string][] = [
@@ -22,37 +21,40 @@ const Check = () => (
 const T = {
   en: {
     label: 'Full-stack developer · QA automation · Medellín, CO',
-    quick: '30-second version',
     lead: 'Full-stack developer — TypeScript · React · Node.js — who designs with Clean Architecture and proves every feature with automated tests, from unit to E2E, security and accessibility. Systems Engineering student at Universidad de Medellín.',
     see: 'See my work',
     avail: 'Open to junior full-stack & QA roles and internships',
     summary: 'Quality summary: 415 unit tests, 32 end-to-end scenarios, 37 defects fixed, Quality Gate passed.',
-    hint: 'move the cursor to compile',
-    hintTouch: 'drag across the photo to compile',
-    on: 'Show code version',
-    off: 'Show photo',
-    alt: 'Santiago González, portrait',
   },
   es: {
     label: 'Desarrollador full-stack · QA automation · Medellín, CO',
-    quick: 'Versión de 30 segundos',
     lead: 'Desarrollador full-stack (TypeScript · React · Node.js) que diseña con Clean Architecture y demuestra cada funcionalidad con pruebas automatizadas: unitarias, E2E, seguridad y accesibilidad. Estudiante de Ingeniería de Sistemas en la Universidad de Medellín.',
     see: 'Ver proyectos',
     avail: 'Disponible para roles junior full-stack, QA y prácticas',
     summary: 'Resumen de calidad: 415 pruebas unitarias, 32 escenarios E2E, 37 defectos corregidos, Quality Gate aprobado.',
-    hint: 'mueve el cursor para compilar',
-    hintTouch: 'desliza sobre la foto para compilar',
-    on: 'Ver versión en código',
-    off: 'Ver foto',
-    alt: 'Santiago González, retrato',
   },
 };
 
 export default function Hero() {
   const { lang } = useSite();
   const t = T[lang];
+  const ref = useRef<HTMLElement>(null);
+
+  // The stage owns the first viewport: the pipeline and headline play when the hero is
+  // actually seen, not while it is still below the fold.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') { el.dataset.play = ''; return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { el.dataset.play = ''; io.disconnect(); }
+    }, { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <section className="hero" aria-labelledby="hero-h">
+    <section ref={ref} className="hero" id="intro" aria-label={t.label}>
       <div className="wrap">
         <div className="hero-top">
           <p className="label">{t.label}</p>
@@ -72,36 +74,24 @@ export default function Hero() {
         </div>
         <p className="sr">{t.summary}</p>
 
-        <div className="hero-grid with-photo">
+        <div className="hero-grid">
           <div className="hero-main">
-            {lang === 'en' ? (
-              <h1 id="hero-h" className="disp t-hero hero-h">
-                I build<br />software<br />that <span className="stroke-host">passes.<DrawStroke variant="underline" color="pass" delay={900} /></span>
-              </h1>
-            ) : (
-              <h1 id="hero-h" className="disp hero-h" style={{ fontSize: 'clamp(40px, 5vw, 84px)' }}>
-                Construyo software que pasa <span className="stroke-host">todas las pruebas.<DrawStroke variant="underline" color="pass" delay={900} /></span>
-              </h1>
-            )}
             <p className="t-lead">{t.lead}</p>
             <div className="hero-cta">
               <a className="b b-1" href="#work">{t.see} <span className="go">→</span></a>
               <a className="b b-t" href="https://github.com/Santiago-mg"><span className="ul">GitHub</span> <span className="go go-ne" aria-hidden="true">↗</span></a>
             </div>
             <p className="avail"><span className="dot" />{t.avail}</p>
-            <div className="spec">
-              <p className="label ink-top" style={{ marginBottom: 14 }}>Spec sheet</p>
-              <dl>
-                <dt>stack</dt><dd>TypeScript · React · Node.js</dd>
-                <dt>quality</dt><dd>Vitest · Playwright · Cypress · Serenity/JS</dd>
-                <dt>ship</dt><dd>Docker · Jenkins · SonarQube · Vercel</dd>
-                <dt>based</dt><dd>Medellín, Colombia (UTC−5)</dd>
-              </dl>
-            </div>
           </div>
-          <div className="hero-photo">
-            <CodePortrait src="/santiago.webp" alt={t.alt} hint={t.hint} hintTouch={t.hintTouch} toggleOn={t.on} toggleOff={t.off} />
-          </div>
+          <aside className="hero-side spec" aria-label="Spec sheet">
+            <p className="label ink-top" style={{ marginBottom: 14 }}>Spec sheet</p>
+            <dl>
+              <dt>stack</dt><dd>TypeScript · React · Node.js</dd>
+              <dt>quality</dt><dd>Vitest · Playwright · Cypress · Serenity/JS</dd>
+              <dt>ship</dt><dd>Docker · Jenkins · SonarQube · Vercel</dd>
+              <dt>based</dt><dd>Medellín, Colombia (UTC−5)</dd>
+            </dl>
+          </aside>
         </div>
       </div>
     </section>

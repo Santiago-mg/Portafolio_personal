@@ -1,27 +1,70 @@
 @import "tailwindcss";
 
 body { margin: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 /* ---------- code portrait (cursor brush reveal) ---------- */
-.sg .hero-grid.with-photo .hero-main { grid-column: span 7; }
-.sg .hero-grid.with-photo .hero-photo { grid-column: 8 / span 5; }
 .sg .cp { margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .sg .cp-box { position: relative; aspect-ratio: 4 / 5; border: var(--bw) solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--sunken); cursor: crosshair; touch-action: pan-y; }
 .sg .cp-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .sg .cp-hint-touch { display: none; }
 @media (hover: none) { .sg .cp-hint-pointer { display: none; } .sg .cp-hint-touch { display: inline; } }
 .sg .cp-cap { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.sg .hero .spec { margin-top: 40px; }
 
-/* While the preloader covers the page, the hero's narrative waits for it. */
-.sg[data-boot] .pl *, .sg[data-boot] .hero-h { animation-play-state: paused; }
-.sg .stroke-host { position: relative; display: inline-block; }
-/* "Parallel" variant from Motion-Pipeline: the headline rises with the pipeline instead of
-   after it, so the wipe never uncovers an empty hero and the LCP lands early. */
-.sg .hero-main .hero-h { animation-delay: 300ms; } /* beats sg.css, which loads after this file */
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-@media (max-width: 1023px) {
-  .sg .hero-grid.with-photo .hero-main, .sg .hero-grid.with-photo .hero-photo { grid-column: 1 / -1; }
-  .sg .hero-grid.with-photo .hero-photo { max-width: 520px; }
+/* ---------- stage: the portrait as the opening scene (Atlas "material encounter") ---------- */
+.sg .stage { position: relative; height: 100svh; min-height: 600px; max-height: 1120px; overflow: hidden; isolation: isolate; background: radial-gradient(120% 90% at 50% 78%, #24241f 0%, #181818 62%); }
+.sg[data-theme="contrast"] .stage { background: #ffffff; }
+.sg .stage-topo { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; fill: none; stroke: rgba(255, 253, 224, .045); stroke-width: 1; }
+.sg .stage-pairs i { position: absolute; left: 0; right: 0; z-index: 0; height: 9px; border-top: 1px solid rgba(255, 253, 224, .08); border-bottom: 1px solid rgba(255, 253, 224, .08); }
+.sg .stage-pairs i:first-child { top: 27%; }
+.sg .stage-pairs i:last-child { top: 84%; }
+.sg .cp--stage { position: absolute; inset: 64px 0 0; z-index: 1; }
+.sg .cp--stage .cp-box { position: absolute; inset: 0; aspect-ratio: auto; border: 0; background: transparent; transform-origin: 50% 100%; transition: transform 1600ms var(--ease-out); }
+.sg .cp--stage .cp-box img { filter: grayscale(1) sepia(.14) brightness(.84) contrast(1.06); }
+.sg[data-theme="contrast"] .cp--stage .cp-box img { filter: none; }
+/* Veil lives inside the photo box, so the caption and the headline stay fully legible. */
+.sg .cp--stage .cp-box::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, #181818 0%, rgba(24, 24, 24, .7) 14%, rgba(24, 24, 24, 0) 40%), linear-gradient(90deg, rgba(24, 24, 24, .6) 0%, rgba(24, 24, 24, 0) 28%, rgba(24, 24, 24, 0) 72%, rgba(24, 24, 24, .6) 100%); }
+.sg[data-theme="contrast"] .cp--stage .cp-box::after { display: none; }
+.sg .stage-h { position: absolute; inset: 0; z-index: 3; margin: 0; pointer-events: none; color: var(--ink); font-size: clamp(42px, 6.4vw, 100px); }
+.sg .stage-h-a, .sg .stage-h-b { position: absolute; display: flex; flex-direction: column; }
+.sg .stage-h-a { left: var(--gutter); top: 31%; }
+.sg .stage-h-b { right: var(--gutter); top: 60%; align-items: flex-end; text-align: right; }
+.sg .stage-h-a > span, .sg .stage-h-b > span { display: block; transition: transform 1000ms var(--ease-out), opacity 700ms var(--ease-out); }
+.sg .stage-h-a > span:nth-child(2) { transition-delay: 70ms; }
+.sg .stage-h-b > span:nth-child(1) { transition-delay: 220ms; }
+.sg .stage-h-b > span:nth-child(2) { transition-delay: 290ms; }
+.sg .stage-tag { position: absolute; left: var(--gutter); top: calc(31% - 40px); z-index: 3; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.sg .stage-tag .label { color: var(--ink-2); }
+.sg .cp--stage .cp-cap { position: absolute; left: var(--gutter); bottom: 28px; z-index: 4; max-width: min(340px, 42%); flex-direction: column; align-items: flex-start; gap: 10px; }
+.sg .cp--stage .cp-cap .meta { color: var(--ink-2); }
+.sg .stage-cue { position: absolute; right: var(--gutter); bottom: 28px; z-index: 4; display: inline-flex; align-items: center; gap: 10px; min-height: 28px; padding: 0 9px; background: var(--wash); color: var(--ink); font-size: 12px; font-weight: 500; letter-spacing: var(--track); text-transform: uppercase; text-decoration: none; }
+.sg .stage-arrow { display: inline-block; animation: sg-nudge 1600ms var(--ease-io) infinite; }
+@keyframes sg-nudge { 0%, 100% { transform: none; } 50% { transform: translateY(3px); } }
+/* Entrance: while the preloader covers the page the portrait waits a touch larger and the
+   headline fragments wait below; the burst uncovers them and they settle. */
+.sg[data-boot] .cp--stage .cp-box { transform: scale(1.06); }
+.sg[data-boot] .stage-h-a > span, .sg[data-boot] .stage-h-b > span { transform: translateY(45%); opacity: 0; }
+@media (max-width: 767px) {
+  .sg .stage { min-height: 560px; }
+  .sg .cp--stage { inset: 56px 0 0; }
+  .sg .stage-h { font-size: clamp(36px, 11.5vw, 60px); }
+  .sg .stage-h-a { top: 17%; }
+  .sg .stage-h-b { top: auto; bottom: 17%; }
+  .sg .stage-tag { top: calc(17% - 54px); }
+  .sg .cp--stage .cp-cap { max-width: calc(100% - 2 * var(--gutter)); bottom: 18px; }
+  .sg .stage-cue { display: none; }
+  .sg .stage-pairs i:first-child { top: 15%; }
 }
+@media (prefers-reduced-motion: reduce) {
+  .sg .cp--stage .cp-box, .sg .stage-h-a > span, .sg .stage-h-b > span { transition: none; transform: none !important; opacity: 1 !important; }
+  .sg .stage-arrow { animation: none; }
+}
+
+/* ---------- hero (now below the stage) ---------- */
+/* The narrative waits for the preloader and for the hero to be in view. */
+.sg[data-boot] .pl *, .sg[data-boot] .hero-h,
+.sg .hero:not([data-play]) .pl *, .sg .hero:not([data-play]) .hero-h { animation-play-state: paused; }
+.sg .stroke-host { position: relative; display: inline-block; }
+/* "Parallel" variant from Motion-Pipeline: the headline rises with the pipeline. */
+.sg .hero-main .hero-h { animation-delay: 300ms; } /* beats sg.css, which loads after this file */

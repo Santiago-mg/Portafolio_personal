@@ -8,6 +8,9 @@ import { useEffect, useRef, useState } from 'react';
  * A brush trail (like the reference video's mask reveal) paints the code layer in and
  * fades out on its own. Press and hold to reveal it all; the button does the same for
  * keyboard and screen-reader users. On touch screens it plays one automatic sweep.
+ *
+ * With `cutout` the source is a transparent PNG: the code only ever appears inside the
+ * silhouette, so the portrait can float on the page like a stage presentation.
  */
 
 const CODE =
@@ -17,16 +20,35 @@ const CODE =
   "git commit -m 'fix: escape LIKE wildcards'; sonar.qualitygate.wait=true; const user = await repo.find(id); " +
   'export function Portfolio(): JSX.Element { return <Build status="passed" /> } ';
 
-const OBJECT_Y = 0.3; // must match objectPosition on the <Image>
+type Props = {
+  src: string;
+  alt: string;
+  hint: string;
+  hintTouch: string;
+  toggleOn: string;
+  toggleOff: string;
+  /** how the photo fills its box, like CSS object-fit */
+  fit?: 'cover' | 'contain';
+  /** object-position as fractions (x, y) */
+  pos?: [number, number];
+  /** transparent PNG: keep the code inside the silhouette */
+  cutout?: boolean;
+  className?: string;
+  sizes?: string;
+};
 
-type Props = { src: string; alt: string; hint: string; hintTouch: string; toggleOn: string; toggleOff: string };
+type Rect = { x: number; y: number; w: number; h: number };
 
-export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, toggleOff }: Props) {
+export default function CodePortrait({
+  src, alt, hint, hintTouch, toggleOn, toggleOff,
+  fit = 'cover', pos = [0.5, 0.3], cutout = false, className, sizes = '(max-width: 1023px) 100vw, 40vw',
+}: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [full, setFull] = useState(false);
   const fullRef = useRef(false);
   const kick = useRef<() => void>(() => {});
+  const [px, py] = pos;
 
   useEffect(() => {
     fullRef.current = full;
@@ -44,45 +66,82 @@ export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, togg
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const img = new window.Image();
     let w = 0, h = 0, dpr = 1, raf = 0, idle = 0, radius = 60;
+    let rect: Rect = { x: 0, y: 0, w: 0, h: 0 };
     let last: { x: number; y: number } | null = null;
     let hold: { x: number; y: number; r: number } | null = null;
+
+    /** Where the <Image> draws the photo inside the box (object-fit + object-position). */
+    const place = (): Rect => {
+      const s = fit === 'cover'
+        ? Math.max(w / img.naturalWidth, h / img.naturalHeight)
+        : Math.min(w / img.naturalWidth, h / img.naturalHeight);
+      const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+      return { x: (w - dw) * px, y: (h - dh) * py, w: dw, h: dh };
+    };
 
     const buildCode = () => {
       if (!img.complete || !img.naturalWidth || !w) return;
       code.width = mask.width = canvas.width = Math.round(w * dpr);
       code.height = mask.height = canvas.height = Math.round(h * dpr);
-      const cell = Math.max(7, Math.round(w / 52));
-      const cols = Math.ceil(w / cell), rows = Math.ceil(h / (cell * 1.25));
-      // Sample the photo with the same "cover" crop the <Image> uses.
+      rect = place();
+      // Character grid sized to the photo, not the box, so a big stage keeps fine detail.
+      const cell = Math.max(6, Math.round(Math.min(rect.w, w) / (cutout ? 68 : 54)));
+      const x0 = Math.max(0, rect.x), y0 = Math.max(0, rect.y);
+      const x1 = Math.min(w, rect.x + rect.w), y1 = Math.min(h, rect.y + rect.h);
+      const cols = Math.ceil((x1 - x0) / cell), rows = Math.ceil((y1 - y0) / (cell * 1.25));
+      if (cols < 1 || rows < 1) return;
+      // Sample the visible part of the photo, one pixel per character.
       const s = document.createElement('canvas');
       s.width = cols; s.height = rows;
       const sctx = s.getContext('2d', { willReadFrequently: true })!;
-      const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-      const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
-      const dx = (w - dw) / 2, dy = (h - dh) * OBJECT_Y;
-      sctx.drawImage(img, (dx / w) * cols, (dy / h) * rows, (dw / w) * cols, (dh / h) * rows);
-      const px = sctx.getImageData(0, 0, cols, rows).data;
-      const c = code.getContext('2d')!;
-      c.fillStyle = '#0D0F0E';
-      c.fillRect(0, 0, code.width, code.height);
-      c.font = `600 ${cell * 1.15 * dpr}px ${getComputedStyle(box).getPropertyValue('--f-mono') || 'monospace'}`;
-      c.textBaseline = 'top';
-      // Stretch the luminance range (2nd–98th percentile) so the face, not the wall, carries the contrast.
-      const lums = new Float32Array(cols * rows);
-      for (let j = 0; j < lums.length; j++) lums[j] = (0.299 * px[j * 4] + 0.587 * px[j * 4 + 1] + 0.114 * px[j * 4 + 2]) / 255;
-      const sorted = Float32Array.from(lums).sort();
+      const sx = cols / (x1 - x0), sy = rows / (y1 - y0);
+      sctx.drawImage(img, (rect.x - x0) * sx, (rect.y - y0) * sy, rect.w * sx, rect.h * sy);
+      const data = sctx.getImageData(0, 0, cols, rows).data;
+      const n = cols * rows;
+      const lums = new Float32Array(n), alpha = new Float32Array(n);
+      const opaque: number[] = [];
+      for (let j = 0; j < n; j++) {
+        alpha[j] = data[j * 4 + 3] / 255;
+        lums[j] = (0.299 * data[j * 4] + 0.587 * data[j * 4 + 1] + 0.114 * data[j * 4 + 2]) / 255;
+        if (alpha[j] > 0.5) opaque.push(lums[j]);
+      }
+      // Stretch the luminance range (2nd–98th percentile of the subject) so the face carries the contrast.
+      const sorted = Float32Array.from(opaque.length ? opaque : lums).sort();
       const lo = sorted[Math.floor(sorted.length * 0.02)], hi = sorted[Math.floor(sorted.length * 0.98)];
       const span = Math.max(0.05, hi - lo);
+      const c = code.getContext('2d')!;
+      c.clearRect(0, 0, code.width, code.height);
+      c.fillStyle = '#0D0F0E';
+      if (cutout) {
+        // Dark backing only inside the silhouette.
+        c.drawImage(img, rect.x * dpr, rect.y * dpr, rect.w * dpr, rect.h * dpr);
+        c.globalCompositeOperation = 'source-in';
+        c.fillRect(0, 0, code.width, code.height);
+        c.globalCompositeOperation = 'source-over';
+      } else {
+        c.fillRect(0, 0, code.width, code.height);
+      }
+      c.font = `600 ${cell * 1.15 * dpr}px ${getComputedStyle(box).getPropertyValue('--f-mono') || 'monospace'}`;
+      c.textBaseline = 'top';
       let k = 0;
       for (let r = 0; r < rows; r++) {
         for (let q = 0; q < cols; q++) {
-          const v = Math.min(1, Math.max(0, (lums[r * cols + q] - lo) / span));
-          const a = 0.07 + Math.pow(v, 1.15) * 0.93;
+          const j = r * cols + q;
+          if (cutout && alpha[j] < 0.15) { k++; continue; }
+          const v = Math.min(1, Math.max(0, (lums[j] - lo) / span));
+          // A steeper curve on the cutout: hair and shirt recede, the face carries the light.
+          const a = (cutout ? 0.05 + Math.pow(v, 1.8) * 0.95 : 0.07 + Math.pow(v, 1.15) * 0.93) * (cutout ? alpha[j] : 1);
           c.fillStyle = v > 0.9 ? `rgba(220,255,232,${a})` : `rgba(74,222,140,${a})`;
-          c.fillText(CODE[k++ % CODE.length], q * cell * dpr, r * cell * 1.25 * dpr);
+          c.fillText(CODE[k++ % CODE.length], (x0 + q * cell) * dpr, (y0 + r * cell * 1.25) * dpr);
         }
       }
-      radius = Math.max(34, Math.min(90, w * 0.1));
+      if (cutout) {
+        // Crisp silhouette edge: keep the code only where the subject is.
+        c.globalCompositeOperation = 'destination-in';
+        c.drawImage(img, rect.x * dpr, rect.y * dpr, rect.w * dpr, rect.h * dpr);
+        c.globalCompositeOperation = 'source-over';
+      }
+      radius = Math.max(34, Math.min(110, Math.min(rect.w, w) * 0.11));
     };
 
     const stamp = (x: number, y: number, r: number) => {
@@ -120,7 +179,7 @@ export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, togg
         mctx.fillStyle = 'rgba(0,0,0,.18)';
         mctx.fillRect(0, 0, mask.width, mask.height);
       } else if (hold) {
-        hold.r += Math.max(w, h) * 0.035;
+        hold.r += Math.max(rect.w, rect.h) * 0.035;
         stamp(hold.x, hold.y, hold.r);
       } else {
         mctx.globalCompositeOperation = 'destination-out';
@@ -154,7 +213,8 @@ export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, togg
     };
     const onLeave = () => { last = null; hold = null; };
     const onDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse') return;
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      if ((e.target as HTMLElement).closest('a, button')) return;
       const p = local(e);
       hold = { x: p.x, y: p.y, r: radius };
       wake();
@@ -163,12 +223,13 @@ export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, togg
 
     const resize = () => {
       const r = box.getBoundingClientRect();
-      w = r.width; h = r.height; dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Big stage canvases are expensive: cap the density a little lower there.
+      w = r.width; h = r.height; dpr = Math.min(window.devicePixelRatio || 1, cutout ? 1.5 : 2);
       buildCode();
       wake();
     };
 
-    // Touch screens have no cursor: play one automatic sweep the first time it is seen.
+    // Touch screens have no cursor: play one automatic sweep over the face the first time it is seen.
     let swept = false;
     const io = new IntersectionObserver((entries) => {
       if (swept || reduce || !entries[0].isIntersecting) return;
@@ -178,14 +239,17 @@ export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, togg
       const sweep = (now: number) => {
         const t = (now - t0) / 2600;
         if (t > 1) { last = null; return; }
-        paint(w * (0.5 + 0.32 * Math.sin(t * Math.PI * 3)), h * (0.18 + 0.6 * t));
+        const fx = Math.max(0, rect.x) + Math.min(rect.w, w) * (0.5 + 0.3 * Math.sin(t * Math.PI * 3));
+        const fy = rect.y + rect.h * (0.16 + 0.5 * t);
+        paint(fx, fy);
         requestAnimationFrame(sweep);
       };
       requestAnimationFrame(sweep);
     }, { threshold: 0.5 });
 
     img.onload = resize;
-    img.src = src;
+    // The canvas samples Next's optimised copy (a few hundred KB instead of the original).
+    img.src = `/_next/image?url=${encodeURIComponent(src)}&w=1080&q=75`;
     const ro = new ResizeObserver(resize);
     ro.observe(box);
     io.observe(box);
@@ -202,16 +266,26 @@ export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, togg
       box.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointerup', onUp);
     };
-  }, [src]);
+  }, [src, fit, px, py, cutout]);
 
   return (
-    <figure className="cp">
+    <figure className={`cp${className ? ` ${className}` : ''}`}>
       <div ref={boxRef} className="cp-box">
-        <Image src={src} alt={alt} fill priority sizes="(max-width: 1023px) 100vw, 40vw" style={{ objectFit: 'cover', objectPosition: `50% ${OBJECT_Y * 100}%` }} />
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          priority
+          sizes={sizes}
+          style={{ objectFit: fit, objectPosition: `${px * 100}% ${py * 100}%` }}
+        />
         <canvas ref={canvasRef} className="cp-canvas" aria-hidden="true" />
       </div>
       <figcaption className="cp-cap">
-        <span className="meta">fig. 01 · santiago.tsx — <span className="cp-hint-pointer">{hint}</span><span className="cp-hint-touch">{hintTouch}</span></span>
+        <span className="meta">
+          fig. 01 · santiago.tsx — <span className="cp-hint-pointer">{hint}</span>
+          <span className="cp-hint-touch">{hintTouch}</span>
+        </span>
         <button type="button" className="b b-2 b-sm" aria-pressed={full} onClick={() => setFull((v) => !v)}>
           {full ? toggleOff : toggleOn}
         </button>
