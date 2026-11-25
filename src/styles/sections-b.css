@@ -1,1 +1,41 @@
-/* Owned by the sections-b agent. */
+/* Owned by the sections-b agent. Quality (02) + Ship (03). */
+
+.sg .q-lvl-li{display:flex}
+.sg .q-panel-wrap{min-width:0}
+.sg .q-panel{padding:28px; display:flex; flex-direction:column; gap:20px}
+.sg .q-panel > *{min-width:0}
+.sg .q-panel-head{display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap}
+.sg .q-bullets{padding-left:18px; display:flex; flex-direction:column; gap:4px}
+.sg .q-panel .code{max-width:100%}
+.sg .q-panel .code:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+
+.sg .q-tech{margin-top:72px; row-gap:16px}
+.sg .q-ai{margin-top:72px; padding:clamp(24px,3vw,40px); row-gap:32px}
+.sg .q-ai-lead{display:flex; flex-direction:column; gap:20px}
+.sg .q-ai-quote{font-size:clamp(26px,2.4vw,34px); line-height:1.12}
+.sg .q-ai-list{display:flex; flex-direction:column}
+.sg .q-ai-row{padding:16px 0; border-top:var(--bw) solid var(--rule)}
+.sg .q-ai-row-last{border-bottom:var(--bw) solid var(--rule)}
+
+.sg .q-def-steps{display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px; font-family:var(--f-mono); font-size:13px; color:var(--ink-2)}
+.sg .q-def-first{display:flex; align-items:center; gap:8px}
+.sg .dlog{max-width:100%}
+.sg .def-btn:focus-visible{outline:2px solid var(--ink); outline-offset:-2px}
+
+.sg .q-flow-head{display:flex; align-items:center; gap:12px; margin-bottom:14px}
+.sg .q-flow-rule{flex:1; height:1px; background:var(--rule)}
+.sg .q-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); gap:16px}
+.sg .q-card{padding:20px; display:flex; flex-direction:column; gap:10px; min-width:0}
+
+/* scroll-in stagger — hidden state is armed only after mount (data-armed) */
+.sg .stg[data-armed="true"] > .stg-i{opacity:0; transform:translateY(8px)}
+.sg .stg[data-shown="true"] > .stg-i{opacity:1; transform:none; transition:opacity 300ms var(--ease-out) var(--d,0ms), transform 300ms var(--ease-out) var(--d,0ms)}
+
+@media (max-width:639px){
+  .sg .q-panel{padding:20px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sg .stg[data-armed="true"] > .stg-i{transform:none}
+  .sg .stg[data-shown="true"] > .stg-i{transition:opacity 150ms ease var(--d,0ms)}
+}
