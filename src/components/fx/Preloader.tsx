@@ -4,8 +4,9 @@ import { useCallback, useLayoutEffect, useState, useSyncExternalStore, type CSSP
 import { useSite } from '@/components/site/SiteProvider';
 
 /*
- * First-visit preloader: an ink "terminal" that compiles the portfolio, then a diagonal
- * wipe (led by a thin green band) uncovers the page.
+ * First-visit opening presentation, after the reference video: the SG mark rises and grows
+ * on a charcoal screen, "all checks passed" floods it green, then the mark bursts into rays
+ * while a hole opens from the centre and uncovers the stage.
  *
  * How it avoids both a flash of content and a stuck cover:
  * 1. The server renders a tiny <style id="sg-boot-gate"> that paints a plain ink cover
@@ -22,22 +23,28 @@ import { useSite } from '@/components/site/SiteProvider';
 /* ---- tunables ---- */
 const KEY = 'sg-boot'; // sessionStorage flag (value = timestamp of the first paint)
 const GATE_ID = 'sg-boot-gate';
-const LOG_MS = 1100; // terminal + progress phase, nominal
+const LOG_MS = 1300; // rise + caption + green flood, nominal
 const MIN_LOG_MS = 380; // if hydration ate the budget below this, skip straight to the wipe
-const WIPE_MS = 650; // must match --fx-boot-wipe in fx.css
-const FAILSAFE_MS = 2600; // the static cover removes itself if React never arrives
+const WIPE_MS = 900; // burst; must match --fx-burst in intro.css
+const FAILSAFE_MS = 3000; // the static cover removes itself if React never arrives
 
-// Each line types in at `at` (scaled by --fx-k); the ✓ pops right after the last one and
-// the progress bar (fx.css, 40 + 880 ms) reaches 100 % a beat before the wipe.
-const LINES = [
-  { text: 'compiling portfolio', at: 100, dur: 220 },
-  { text: 'running 1,000+ checks', at: 360, dur: 260 },
-  { text: 'all checks passed', at: 660, dur: 200, ok: true },
-] as const;
+// Rays of the burst: angle (deg), length (vmax), thickness, colour, delay (ms), travel.
+const RAYS = Array.from({ length: 20 }, (_, i) => {
+  const a = i * 18 + (i % 3) * 5 - 6;
+  const palette = ['#fffde0', '#3ccb7f', '#181818', '#fffde0', '#d6f5e3'];
+  return {
+    a,
+    l: 26 + ((i * 37) % 30),
+    w: `${1.1 + ((i * 53) % 9) * 0.42}vmin`,
+    c: palette[i % palette.length],
+    d: (i * 29) % 110,
+    far: `${38 + ((i * 41) % 26)}vmax`,
+  };
+});
 
 const GATE_CSS =
   '@media (prefers-reduced-motion:no-preference){' +
-  `.sg::before{content:"";position:fixed;inset:0;z-index:1000;background:#121412;animation:sg-boot-failsafe 240ms linear ${FAILSAFE_MS}ms forwards}}` +
+  `.sg::before{content:"";position:fixed;inset:0;z-index:1000;background:#181818;animation:sg-boot-failsafe 240ms linear ${FAILSAFE_MS}ms forwards}}` +
   '@keyframes sg-boot-failsafe{to{opacity:0;visibility:hidden}}';
 
 const GATE_JS =
@@ -146,40 +153,31 @@ function Cover({ onWipe, onDone }: { onWipe: () => void; onDone: () => void }) {
   return (
     <div
       className="fx-boot"
-      data-phase={phase}
+      data-phase={phase === 'wipe' ? 'burst' : 'intro'}
       data-fast={logMs === 0 ? '' : undefined}
       aria-hidden="true"
-      style={{ '--fx-k': (logMs / LOG_MS).toFixed(3) } as CSSProperties}
+      style={{ '--fx-intro': `${Math.max(logMs, 1)}ms` } as CSSProperties}
     >
-      <div className="fx-boot-band" />
-      <div className="fx-boot-panel">
-        <div className="fx-boot-in">
-          <div className="fx-boot-top">
-            <span className="fx-boot-mark">SG</span>
-            <span className="fx-boot-name">Santiago González</span>
-          </div>
-          <div className="fx-boot-foot">
-            <ol className="fx-boot-log">
-              {LINES.map((l) => (
-                <li
-                  key={l.text}
-                  style={{ '--at': `${l.at}ms`, '--dur': `${l.dur}ms`, '--n': l.text.length } as CSSProperties}
-                >
-                  <span className="fx-boot-p">&gt;</span>
-                  <span className="fx-boot-t">{l.text}</span>
-                  {'ok' in l ? <span className="fx-boot-ok">✓</span> : null}
-                </li>
-              ))}
-            </ol>
-            <div className="fx-boot-prog">
-              <span className="fx-boot-track">
-                <span className="fx-boot-fill" />
-              </span>
-              <span className="fx-boot-pct" />
-            </div>
-          </div>
-        </div>
+      <div className="fx-boot-bg">
+        <div className="fx-boot-flood" />
+        <div className="fx-boot-pairs"><i /><i /></div>
       </div>
+      <div className="fx-rays">
+        {RAYS.map((r, i) => (
+          <span
+            key={i}
+            className="fx-ray"
+            style={{ '--a': `${r.a}deg`, '--l': r.l, '--w': r.w, '--c': r.c, '--d': `${r.d}ms`, '--far': r.far } as CSSProperties}
+          />
+        ))}
+      </div>
+      <span className="fx-boot-id">Santiago González</span>
+      <span className="fx-boot-build">build 2026.11</span>
+      <span className="fx-boot-mark">SG</span>
+      <span className="fx-boot-cap">
+        <span className="fx-boot-cap-t">All checks passed</span>
+        <span className="fx-boot-cap-ok">✓</span>
+      </span>
     </div>
   );
 }

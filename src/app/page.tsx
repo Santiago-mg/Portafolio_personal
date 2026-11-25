@@ -1,8 +1,12 @@
 import SiteProvider from '@/components/site/SiteProvider';
+import Guides from '@/components/site/Guides';
+import ScrollRail from '@/components/site/ScrollRail';
 import Preloader from '@/components/fx/Preloader';
 import Nav from '@/components/sections/Nav';
+import Stage from '@/components/sections/Stage';
 import Hero from '@/components/sections/Hero';
 import Evidence from '@/components/sections/Evidence';
+import Process from '@/components/sections/Process';
 import Work from '@/components/sections/Work';
 import Interlude from '@/components/sections/Interlude';
 import Quality from '@/components/sections/Quality';
@@ -19,10 +23,14 @@ export default function Home() {
     <SiteProvider>
       <a className="skip" href="#content">Skip to content</a>
       <Preloader />
+      <Guides />
+      <ScrollRail />
       <Nav />
       <main id="content">
+        <Stage />
         <Hero />
         <Evidence />
+        <Process />
         <Work />
         <Interlude />
         <Quality />

@@ -1,0 +1,76 @@
+/* =====================================================================
+   Opening presentation (Preloader.tsx) — after the reference video:
+   a solid screen with the mark small at the bottom → the mark rises and
+   grows → the screen floods green ("all checks passed") → the mark bursts
+   into rays while a hole opens from the centre and uncovers the stage.
+   Timing: LOG_MS (intro) and BURST_MS in Preloader.tsx.
+   ===================================================================== */
+@property --fx-hole { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
+.sg .fx-boot { position: fixed; inset: 0; z-index: 1000; overflow: hidden; contain: layout paint; pointer-events: auto; --fx-burst: 900ms; }
+.sg .fx-boot[data-phase="burst"] { pointer-events: none; }
+
+/* Ground: charcoal, then the green flood; both get the opening hole. */
+.sg .fx-boot-bg {
+  position: absolute; inset: 0; background: #181818;
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--fx-hole), #000 calc(var(--fx-hole) + 1px));
+  mask: radial-gradient(circle at 50% 50%, transparent var(--fx-hole), #000 calc(var(--fx-hole) + 1px));
+}
+.sg .fx-boot[data-phase="burst"] .fx-boot-bg { --fx-hole: 160vmax; transition: --fx-hole var(--fx-burst) cubic-bezier(.64, 0, .78, 0); }
+.sg .fx-boot-flood { position: absolute; inset: 0; background: #1f8a4c; clip-path: circle(0 at 50% 50%); animation: fx-flood 420ms cubic-bezier(.77, 0, .175, 1) calc(var(--fx-intro) - 380ms) forwards; }
+@keyframes fx-flood { to { clip-path: circle(150vmax at 50% 50%); } }
+
+/* Paired drafting rules, as on the page. */
+.sg .fx-boot-pairs i { position: absolute; left: 0; right: 0; height: 9px; border-top: 1px solid rgba(255, 253, 224, .1); border-bottom: 1px solid rgba(255, 253, 224, .1); }
+.sg .fx-boot-pairs i:first-child { top: 22%; }
+.sg .fx-boot-pairs i:last-child { top: 78%; }
+
+/* Corner identity, like the reference's top-left name. */
+.sg .fx-boot-id, .sg .fx-boot-build { position: absolute; top: 24px; font: 500 12px/1 var(--f-text); text-transform: uppercase; letter-spacing: -.03em; color: #fffde0; transition: opacity 200ms ease; }
+.sg .fx-boot-id { left: 32px; }
+.sg .fx-boot-build { right: 32px; color: rgba(255, 253, 224, .62); }
+.sg .fx-boot[data-phase="burst"] .fx-boot-id, .sg .fx-boot[data-phase="burst"] .fx-boot-build { opacity: 0; }
+
+/* The mark: rises from the bottom and grows, then bursts. */
+.sg .fx-boot-mark {
+  position: absolute; left: 50%; top: 50%; width: 92px; height: 92px; margin: -46px 0 0 -46px;
+  display: grid; place-items: center; background: #fffde0; color: #181818;
+  font: 500 32px/1 var(--f-text); letter-spacing: -.03em;
+  animation: fx-mark-rise calc(var(--fx-intro) * .68) cubic-bezier(.77, 0, .175, 1) both;
+}
+@keyframes fx-mark-rise {
+  from { transform: translateY(38vh) scale(.42); opacity: 0; }
+  18% { opacity: 1; }
+  to { transform: none; opacity: 1; }
+}
+.sg .fx-boot[data-phase="burst"] .fx-boot-mark { animation: none; transform: scale(3.4); opacity: 0; transition: transform 560ms cubic-bezier(.64, 0, .78, 0), opacity 240ms ease 260ms; }
+
+/* Caption under the mark: types in, then the check pops. */
+.sg .fx-boot-cap { position: absolute; left: 50%; top: calc(50% + 72px); transform: translateX(-50%); display: flex; align-items: center; gap: 10px; font: 500 12px/1 var(--f-text); text-transform: uppercase; letter-spacing: .02em; color: #fffde0; white-space: nowrap; transition: opacity 180ms ease; }
+.sg .fx-boot-cap-t { display: inline-block; clip-path: inset(0 100% 0 0); animation: fx-type 380ms steps(17, end) calc(var(--fx-intro) * .42) forwards; }
+.sg .fx-boot-cap-ok { display: inline-grid; place-items: center; width: 16px; height: 16px; background: #3ccb7f; color: #181818; font-size: 11px; opacity: 0; transform: scale(.6); animation: fx-pop 220ms cubic-bezier(.23, 1, .32, 1) calc(var(--fx-intro) * .42 + 400ms) forwards; }
+.sg .fx-boot[data-phase="burst"] .fx-boot-cap { opacity: 0; }
+@keyframes fx-type { to { clip-path: inset(0 0 0 0); } }
+@keyframes fx-pop { to { opacity: 1; transform: none; } }
+
+/* Rays: shoot out from the mark when it bursts. */
+.sg .fx-rays { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+.sg .fx-ray { position: absolute; left: 0; top: 0; width: calc(var(--l) * 1vmax); height: var(--w); margin-top: calc(var(--w) / -2); background: linear-gradient(90deg, transparent 0%, var(--c) 32%, var(--c) 100%); transform-origin: 0 50%; transform: rotate(var(--a)) scaleX(0); opacity: 0; }
+.sg .fx-boot[data-phase="burst"] .fx-ray { animation: fx-ray var(--fx-burst) cubic-bezier(.16, 1, .3, 1) var(--d) both; }
+@keyframes fx-ray {
+  0% { transform: rotate(var(--a)) translateX(2vmin) scaleX(0); opacity: 1; }
+  55% { opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(var(--far)) scaleX(1); opacity: 0; }
+}
+
+/* Hydration ate the intro budget: go straight to the flood and the burst. */
+.sg .fx-boot[data-fast] .fx-boot-mark { animation: none; }
+.sg .fx-boot[data-fast] .fx-boot-flood { animation: none; clip-path: circle(150vmax at 50% 50%); }
+.sg .fx-boot[data-fast] .fx-boot-cap { display: none; }
+
+@media (max-width: 767px) {
+  .sg .fx-boot-mark { width: 72px; height: 72px; margin: -36px 0 0 -36px; font-size: 26px; }
+  .sg .fx-boot-cap { top: calc(50% + 58px); }
+  .sg .fx-boot-id { left: 20px; }
+  .sg .fx-boot-build { right: 20px; }
+}

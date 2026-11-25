@@ -1,14 +1,17 @@
 import type { Metadata } from 'next';
-import { Archivo, IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
+import { IBM_Plex_Mono, Inter } from 'next/font/google';
 import './globals.css';
 import './sg.css';
+import '../styles/atlas.css'; // Atlas foundation: tokens, type, shapes (section files refine it)
 import '../styles/sections-a.css';
 import '../styles/sections-b.css';
 import '../styles/sections-c.css';
 import '../styles/fx.css';
+import '../styles/intro.css';
+import '../styles/atlas-scenes.css';
 
-const archivo = Archivo({ subsets: ['latin'], axes: ['wdth'], variable: '--font-archivo' });
-const plexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-plex-sans' });
+// One grotesk for everything; a monospace only where the content is literally code.
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const plexMono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-plex-mono' });
 
 export const metadata: Metadata = {
@@ -19,11 +22,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${plexMono.variable}`}>
       <body>
         {/* Without JS the preloader never runs: let the narrative animations play. */}
         <noscript>
-          <style>{'.sg[data-boot] .pl *, .sg[data-boot] .hero-h{animation-play-state:running !important}'}</style>
+          <style>
+            {'.sg .pl *, .sg .hero-h, .sg .stage-h *{animation-play-state:running !important}' +
+              '.sg .stage-h span, .sg .cp--stage .cp-box{transform:none !important; opacity:1 !important}'}
+          </style>
         </noscript>
         {children}
       </body>
