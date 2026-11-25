@@ -2,20 +2,22 @@
 
 Personal portfolio of **Santiago González**, full-stack developer (TypeScript · React · Node.js) with a QA engineer's discipline. Systems Engineering student at Universidad de Medellín, Colombia.
 
-> **Build verde** — the site is presented as a software release that passed every check: a CI pipeline in the hero, check badges on every project, a defect log and a status bar. Green only ever means *passed*.
+> An engineering-led, cinematic design: charcoal ground, warm cream type, hairline drafting guides and square controls. The site is presented as a software release that passed every check — and green only ever means *passed*.
 
 ## Highlights
 
-- **Code portrait** — move the cursor over the photo and a brush trail reveals the same face rendered from real test and pipeline code. Press and hold to compile it all; a toggle does the same for keyboard and screen-reader users; touch screens get an automatic sweep.
-- **Preloader and diagonal wipe**, headings revealed by sweeping bars, and hand-drawn strokes that draw themselves on scroll.
+- **Opening presentation** — the SG mark rises, the screen floods green on *all checks passed*, then the mark bursts into rays that uncover the stage.
+- **Code portrait stage** — a full-screen, background-free portrait with a split headline. Move the cursor over the face and a brush trail reveals it rendered from real test and pipeline code, only inside the silhouette. Press and hold to compile it all; a toggle does the same for keyboard and screen-reader users; touch screens get an automatic sweep.
+- **Exploded system study** — a sticky, scroll-linked isometric drawing of the stack that moves through BUILD → TEST → SHIP, highlighting one layer at a time.
+- Headings revealed by sweeping bars, hand-drawn strokes that draw themselves on scroll, and a monumental closing statement over a landscape drawn in SVG.
 - **WebGL galleries** — a dark interlude with scroll-linked marquee type and project posters floating in depth, plus an arc carousel of every project (drag, swipe, keyboard).
 - **Quality section** — interactive test pyramid with real numbers and snippets, and a defect log that replays each bug going from red to green.
-- **Command palette** (⌘K / Ctrl+K), full-screen mobile menu, English/Spanish and three themes (light, dark, high contrast).
+- **Command palette** (⌘K / Ctrl+K), full-screen mobile menu, English/Spanish and a high-contrast theme.
 - **Accessible by default** — semantic HTML, full keyboard support, visible focus, WCAG AA contrast in every theme and `prefers-reduced-motion` respected everywhere.
 
 ## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · CSS design tokens · WebGL2 · self-hosted Archivo and IBM Plex fonts via `next/font`.
+Next.js 16 (App Router) · React 19 · TypeScript · CSS design tokens · Canvas 2D and WebGL2 · self-hosted Inter and IBM Plex Mono via `next/font`.
 
 ## Run locally
 
