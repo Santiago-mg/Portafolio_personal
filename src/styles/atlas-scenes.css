@@ -1,0 +1,356 @@
+/* =====================================================================
+   Atlas scenes — process chapter, closing call and footer (owned by the scenes agent).
+   Motion is transform / opacity only. Hover lives inside (hover:hover) and (pointer:fine).
+   ===================================================================== */
+
+/* Drawn outbound arrow (ArrowNE) */
+.sg .arrow-ne { flex: none; display: inline-block; transition: transform 200ms var(--ease-out); }
+
+
+/* =====================================================================
+   1 · Process — technical chapter (BUILD → TEST → SHIP)
+   Static (server, no JS, reduced motion, short screens): three stacked scenes.
+   [data-live]: a 300vh track pins one stage; Process.tsx drives the drawing.
+   ===================================================================== */
+.sg .prc {
+  /* ---- tunables ---- */
+  --prc-top: 128px;            /* stage header, clear of the fixed two-row nav */
+  --prc-fig: min(600px, 44vw, calc((100svh - 260px) * .9375)); /* drawing width; height follows 600:640 */
+  --prc-verb: clamp(72px, 10vw, 176px);
+  --prc-max: calc(1280px + 2 * var(--gutter));
+
+  position: relative;
+  isolation: isolate;
+  margin-top: -1px; /* first hairline lands on the previous section's rule */
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  /* the second of the paired hairlines, 8px inside */
+  background: linear-gradient(var(--rule), var(--rule)) 0 8px / 100% 1px no-repeat;
+}
+.sg .prc-stage { position: relative; }
+
+/* Faint terrain contours behind everything */
+.sg .prc-topo { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
+.sg .prc-topo path { fill: none; stroke: var(--ink); stroke-opacity: .045; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.sg[data-theme="contrast"] .prc-topo { display: none; }
+
+/* Header: a drawing sheet's title row */
+.sg .prc-head {
+  position: relative; z-index: 3;
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px 24px;
+  max-width: var(--prc-max); margin: 0 auto; padding: 64px var(--gutter) 13px;
+}
+.sg .prc-head::after { content: ""; position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0; height: 1px; background: var(--rule); }
+.sg .prc-h, .sg .prc-cap { font-family: var(--f-text); font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; }
+.sg .prc-h { color: var(--ink); }
+.sg .prc-cap { color: var(--muted); text-align: right; }
+
+/* A scene: meta top-left, copy bottom-left, drawing centre-right, verb bottom-right */
+.sg .prc-scene {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  column-gap: 24px;
+  max-width: var(--prc-max); min-height: clamp(640px, 100svh, 920px);
+  margin: 0 auto; padding: 32px var(--gutter) 44px;
+}
+/* Static scenes are at least 640px tall, so their drawing never shrinks below that budget. */
+.sg .prc:not([data-live]) { --prc-fig: min(600px, 44vw, calc((clamp(640px, 100svh, 920px) - 250px) * .9375)); }
+.sg .prc-scene + .prc-scene::before { content: ""; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px; background: var(--rule); }
+
+.sg .prc-meta { grid-area: 1 / 1; align-self: start; display: flex; align-items: center; gap: 20px; padding-top: 24px; }
+.sg .prc-num { display: inline-flex; align-items: baseline; gap: 3px; font-family: var(--f-text); font-size: 14px; line-height: 16px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); }
+.sg .prc-of { color: var(--muted); }
+.sg .prc-roll { display: inline-block; overflow: hidden; height: 16px; }
+.sg .prc-roll > span { display: block; }
+.sg .prc-dots { display: inline-flex; gap: 8px; }
+.sg .prc-dots i { position: relative; display: block; width: 7px; height: 7px; border: 1px solid var(--muted); border-radius: 50% !important; }
+.sg .prc-dots i[data-on]::after { content: ""; position: absolute; inset: -1px; background: var(--pass); border-radius: 50% !important; }
+
+.sg .prc-copy { grid-area: 3 / 1; align-self: end; max-width: 32ch; padding-bottom: 5px; }
+.sg .prc-t {
+  font-family: var(--f-disp); font-size: clamp(24px, 2.1vw, 30px); line-height: .906; font-weight: 500;
+  letter-spacing: var(--track); text-transform: uppercase; color: var(--ink); text-wrap: balance;
+}
+.sg .prc-p { margin-top: 16px; font-size: 16px; line-height: 23px; color: var(--ink-2); text-wrap: pretty; }
+
+.sg .prc-verb {
+  grid-area: 3 / 2; justify-self: end; align-self: end;
+  position: relative; z-index: 1;
+  overflow: hidden; margin-right: -.04em;
+  font-family: var(--f-disp); font-size: var(--prc-verb); line-height: .906; font-weight: 500;
+  letter-spacing: var(--track); text-transform: uppercase; white-space: nowrap; color: var(--ink);
+  user-select: none; pointer-events: none;
+}
+.sg .prc-verb > span { display: block; }
+
+/* ---------- the drawing ---------- */
+.sg .prc-fig {
+  grid-area: 1 / 2 / 4 / 3; justify-self: center; align-self: center;
+  position: relative; z-index: 2;
+  width: var(--prc-fig); aspect-ratio: 600 / 640;
+  margin-right: clamp(0px, 8vw, 120px); /* sits toward the page centre, clear of the verb */
+  container-type: inline-size; /* notes position in cqw, 1 viewBox unit = 100cqw / 600 */
+}
+.sg .prc-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sg .prc-svg path, .sg .prc-svg line {
+  fill: none; stroke: var(--ink); stroke-width: 1; stroke-linejoin: round; vector-effect: non-scaling-stroke;
+}
+.sg .prc-svg .p-f { fill: var(--paper); }           /* hidden-line removal, not a colour */
+.sg .prc-svg .p-d { stroke-opacity: .5; }
+.sg .prc-svg .p-h { stroke-opacity: .26; }
+.sg .prc-svg .p-x { stroke-opacity: .6; stroke-dasharray: 3 3; }
+.sg .prc-svg .p-cn { stroke-opacity: .34; stroke-dasharray: 2 4; }
+.sg .prc-svg .p-cl { stroke-opacity: .28; stroke-dasharray: 14 4 2 4; }
+.sg .prc-svg .p-tk { stroke-opacity: .4; }
+.sg .prc-svg .p-ld { stroke-opacity: .5; }
+/* "Passed": the green layer fades over the cream one, exactly one group at a time */
+.sg .prc-svg .p-ink, .sg .prc-svg .p-hi { transition: opacity 480ms var(--ease-out); }
+.sg .prc-svg .p-hi { opacity: 0; }
+.sg .prc-svg .p-hi path { stroke: var(--pass-ink); }
+.sg .prc-svg .p-hi .p-ld { stroke-opacity: .85; }
+.sg .prc-fig[data-hl="0"] [data-on="0"] > .p-ink,
+.sg .prc-fig[data-hl="1"] [data-on="1"] > .p-ink,
+.sg .prc-fig[data-hl="2"] [data-on="2"] > .p-ink { opacity: 0; }
+.sg .prc-fig[data-hl="0"] [data-on="0"] > .p-hi,
+.sg .prc-fig[data-hl="1"] [data-on="1"] > .p-hi,
+.sg .prc-fig[data-hl="2"] [data-on="2"] > .p-hi { opacity: 1; }
+
+/* Annotations: 12px labels at the outer end of their leader lines */
+.sg .prc-note {
+  --prc-u: calc(100cqw / 600);
+  position: absolute; left: 0; top: 0;
+  display: flex; flex-direction: column; gap: 3px;
+  font-family: var(--f-text); font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0;
+  text-transform: uppercase; white-space: nowrap; color: var(--ink);
+  transform: translate(calc(var(--ax) * var(--prc-u)), calc(var(--ay) * var(--prc-u))) translate(8px, -50%);
+  opacity: .58; /* ink-2 detail stays above 4.5:1 at this opacity */
+  transition: opacity 400ms var(--ease-out);
+  pointer-events: none;
+}
+.sg .prc-note[data-side="l"] {
+  text-align: right;
+  transform: translate(calc(var(--ax) * var(--prc-u)), calc(var(--ay) * var(--prc-u))) translate(calc(-100% - 8px), -50%);
+}
+.sg .prc-note > span { font-weight: 400; color: var(--ink-2); }
+.sg .prc-fig[data-hl="0"] .prc-note[data-on="0"],
+.sg .prc-fig[data-hl="1"] .prc-note[data-on="1"],
+.sg .prc-fig[data-hl="2"] .prc-note[data-on="2"] { opacity: 1; }
+
+/* ---------- live: one pinned stage, three stacked states ---------- */
+.sg .prc[data-live] .prc-track { height: 300vh; }
+.sg .prc[data-live] .prc-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.sg .prc[data-live] .prc-head { position: absolute; top: var(--prc-top); left: 0; right: 0; padding-top: 0; }
+.sg .prc[data-live] .prc-scene {
+  position: absolute; inset: 0; min-height: 0;
+  padding-top: calc(var(--prc-top) + 28px);
+}
+.sg .prc[data-live] .prc-scene + .prc-scene::before { display: none; }
+/* Scene 1's drawing is the live one; the others only exist for the static layout. */
+.sg .prc[data-live] .prc-scene ~ .prc-scene .prc-fig { display: none; }
+.sg .prc[data-live] .prc-fig { will-change: transform; }
+
+/* Copy: the outgoing state leaves first, the incoming one follows */
+.sg .prc[data-live] .prc-copy { transition: opacity 320ms var(--ease-out), transform 560ms var(--ease-out); }
+.sg .prc[data-live] .prc-scene[data-pos="before"] .prc-copy { opacity: 0; transform: translate3d(0, -14px, 0); }
+.sg .prc[data-live] .prc-scene[data-pos="after"] .prc-copy { opacity: 0; transform: translate3d(0, 14px, 0); }
+.sg .prc[data-live] .prc-scene[data-pos="on"] .prc-copy { transition-delay: 160ms, 120ms; }
+
+/* Verb and chapter number roll through their own line, in the direction of travel */
+.sg .prc[data-live] .prc-verb > span { transition: transform 760ms var(--ease-io); }
+.sg .prc[data-live] .prc-roll > span { transition: transform 560ms var(--ease-io); }
+.sg .prc[data-live] .prc-scene[data-pos="before"] :is(.prc-verb, .prc-roll) > span { transform: translate3d(0, -101%, 0); }
+.sg .prc[data-live] .prc-scene[data-pos="after"] :is(.prc-verb, .prc-roll) > span { transform: translate3d(0, 101%, 0); }
+
+/* Dots: the first scene keeps the outlines, every scene owns one green fill that crossfades */
+.sg .prc[data-live] .prc-scene ~ .prc-scene .prc-dots i { border-color: transparent; }
+.sg .prc[data-live] .prc-scene ~ .prc-scene .prc-of { visibility: hidden; }
+.sg .prc[data-live] .prc-dots i[data-on]::after { transition: opacity 320ms var(--ease-out); }
+.sg .prc[data-live] .prc-scene:not([data-pos="on"]) .prc-dots i[data-on]::after { opacity: 0; }
+
+/* ---------- sizes ---------- */
+@media (max-width: 1100px) { .sg .prc { --prc-top: 96px; } }
+
+@media (max-width: 1023px) {
+  .sg .prc {
+    /* the drawing's own margins are empty, so it may bleed past the gutters a little */
+    --prc-fig: min(112%, 560px, calc((100svh - 380px) * .9375));
+    --prc-verb: min(18vw, 132px);
+  }
+  .sg .prc-scene { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  .sg .prc-meta { grid-area: 1 / 1; padding-top: 16px; }
+  .sg .prc-fig { grid-area: 2 / 1; justify-self: start; margin: 8px 0 8px calc((100% - var(--prc-fig)) / 2); }
+  .sg .prc-verb { grid-area: 2 / 1; align-self: end; margin-bottom: 4px; }
+  .sg .prc-copy { grid-area: 3 / 1; max-width: 40ch; padding: 20px 0 0; }
+  /* Annotations down to the essentials: the highlighted part's name and leader only */
+  .sg .prc-note { opacity: 0; }
+  .sg .prc-note > span { display: none; }
+  .sg .prc-svg .p-ink .p-ld { display: none; }
+  .sg .prc:not([data-live]) { --prc-fig: min(100%, 520px); }
+  .sg .prc:not([data-live]) .prc-scene { min-height: 0; padding-top: 40px; padding-bottom: 56px; }
+}
+@media (max-width: 767px) {
+  .sg .prc { --prc-top: 80px; }
+  .sg .prc-cap { display: none; }
+  .sg .prc-head { padding-top: 48px; }
+  .sg .prc[data-live] .prc-scene { padding-top: calc(var(--prc-top) + 16px); padding-bottom: 24px; }
+  .sg .prc-t { font-size: 24px; }
+  .sg .prc-p { margin-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg .prc-svg .p-ink, .sg .prc-svg .p-hi, .sg .prc-note { transition: none; }
+}
+
+
+/* =====================================================================
+   2 · Contact — monumental closing call over a technical landscape
+   ===================================================================== */
+.sg .ct {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 90vh; height: 90svh; min-height: 620px; max-height: 1040px;
+  border-top: 1px solid var(--rule);
+  background: #3a4d4a; /* the sky's middle, until the drawing paints */
+  color: var(--ink);
+}
+.sg .ct-land { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
+.sg .ct-strata, .sg .ct-contour { fill: none; stroke: #fffde0; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.sg .ct-strata { stroke-opacity: .05; }
+.sg .ct-survey { fill: none; stroke: #fffde0; stroke-opacity: .45; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.sg .ct-weave { opacity: .05; }
+.sg .ct-grain { opacity: .16; mix-blend-mode: overlay; }
+
+.sg .ct-in {
+  display: flex; flex-direction: column; align-items: center; gap: clamp(32px, 5.2vh, 56px);
+  width: 100%; padding: 0 var(--gutter);
+  margin-top: -5vh; /* optical centre sits above the geometric one */
+}
+.sg .ct-h {
+  max-width: 100%;
+  font-family: var(--f-disp); font-size: clamp(48px, 10.4vw, 168px); line-height: 1.1; font-weight: 500;
+  letter-spacing: var(--track); text-transform: none; text-align: center; color: var(--ink);
+}
+.sg .ct-l { display: block; }
+.sg .ct[lang="es"] .ct-h { font-size: clamp(44px, 9.4vw, 152px); } /* longer lines in Spanish */
+
+.sg .ct-acts { display: flex; gap: 8px; max-width: 100%; }
+.sg .ct-go, .sg .ct-copy {
+  position: relative; background: #181818; color: #fffde0; border: 0;
+  transition: transform 140ms var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.sg .ct-go::after, .sg .ct-copy::after {
+  content: ""; position: absolute; inset: 0; background: #fffde0; opacity: 0; pointer-events: none;
+  transition: opacity 200ms ease-in-out;
+}
+.sg .ct-go {
+  flex: 0 1 auto; width: 266px; min-width: 0; height: 85px;
+  display: grid; grid-template-rows: 1fr auto; padding: 14px 16px 15px;
+  font-family: var(--f-text); font-size: 13px; line-height: 16px; font-weight: 500; letter-spacing: 0;
+  text-transform: uppercase; text-decoration: none;
+}
+.sg .ct-go .arrow-ne { justify-self: end; align-self: start; }
+.sg .ct-go-l { align-self: end; }
+.sg .ct-copy { flex: none; display: grid; place-items: center; width: 85px; height: 85px; padding: 0; cursor: pointer; }
+.sg .ct-copy[data-done] { color: var(--pass-ink); }
+.sg .ct-go:active, .sg .ct-copy:active { transform: scale(.985); }
+@media (hover: hover) and (pointer: fine) {
+  .sg .ct-go:hover::after, .sg .ct-copy:hover::after { opacity: .07; }
+  .sg .ct-go:hover .arrow-ne { transform: translate(2px, -2px); }
+}
+.sg .ct-mail { font-size: 14px; line-height: 20px; color: var(--ink-2); margin-top: -16px; user-select: all; }
+
+.sg .ct-geo {
+  position: absolute; left: var(--gutter); bottom: 24px;
+  display: flex; flex-wrap: wrap; gap: 4px 16px;
+  font-family: var(--f-text); font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0;
+  text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 767px) {
+  .sg .ct-h { font-size: 13.4vw; }
+  .sg .ct[lang="es"] .ct-h { font-size: 10.6vw; }
+  .sg .ct-in { margin-top: -3vh; }
+}
+
+/* High contrast: a plain band, no painting */
+.sg[data-theme="contrast"] .ct { background: #ffffff; border-top: 2px solid #000000; }
+.sg[data-theme="contrast"] .ct-land { display: none; }
+.sg[data-theme="contrast"] .ct-go, .sg[data-theme="contrast"] .ct-copy { background: #000000; color: #ffffff; }
+.sg[data-theme="contrast"] .ct-copy[data-done] { color: #ffffff; }
+.sg[data-theme="contrast"] .ct-geo { color: #000000; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sg .ct-go, .sg .ct-copy, .sg .ct-go .arrow-ne { transition: none; transform: none; }
+}
+
+
+/* =====================================================================
+   3 · Footer — grounded
+   ===================================================================== */
+.sg .ft {
+  position: relative;
+  border-top: 1px solid var(--rule);
+  background: var(--paper) linear-gradient(var(--rule), var(--rule)) 0 8px / 100% 1px no-repeat;
+  color: var(--ink);
+}
+.sg .ft-in { max-width: calc(1280px + 2 * var(--gutter)); margin: 0 auto; padding: 80px var(--gutter) 48px; }
+.sg .ft-top { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); column-gap: 16px; row-gap: 48px; align-items: start; }
+.sg .ft-id {
+  grid-column: 1 / 12;
+  font-family: var(--f-disp); font-size: clamp(44px, 5.6vw, 80px); line-height: .906; font-weight: 500;
+  letter-spacing: var(--track); text-transform: uppercase; color: var(--muted);
+}
+.sg .ft-id span { display: block; }
+.sg .ft-c1 { grid-column: 13 / 17; }
+.sg .ft-c2 { grid-column: 17 / 21; }
+.sg .ft-c3 { grid-column: 21 / 25; }
+.sg .ft-hd {
+  padding-bottom: 12px; margin-bottom: 10px; border-bottom: 1px solid var(--rule);
+  font-family: var(--f-text); font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0;
+  text-transform: uppercase; color: var(--muted);
+}
+.sg .ft-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.sg .ft-a {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 28px; max-width: 100%;
+  font-family: var(--f-text); font-size: 14px; line-height: 16px; font-weight: 500; letter-spacing: -.01em;
+  text-transform: uppercase; color: var(--ink); text-decoration: none;
+}
+.sg .ft-mail { text-transform: none; overflow-wrap: anywhere; }
+@media (hover: hover) and (pointer: fine) {
+  .sg .ft-a:hover .arrow-ne { transform: translate(2px, -2px); }
+}
+
+.sg .ft-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 40px;
+  margin-top: 144px; padding-top: 16px; border-top: 1px solid var(--rule);
+  font-family: var(--f-text); font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0;
+  text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.sg .ft-row p { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.sg .ft-row .ft-a { font-size: 12px; line-height: 14px; letter-spacing: 0; }
+.sg .ft-st .dot { width: 7px; height: 7px; box-shadow: none; }
+.sg .ft-clock time { color: var(--ink); }
+.sg .ft-c { margin-left: auto; }
+
+@media (max-width: 1023px) {
+  .sg .ft-id { grid-column: 1 / -1; }
+  .sg .ft-c1 { grid-column: 1 / 9; }
+  .sg .ft-c2 { grid-column: 9 / 17; }
+  .sg .ft-c3 { grid-column: 17 / 25; }
+  .sg .ft-row { margin-top: 112px; }
+}
+@media (max-width: 639px) {
+  .sg .ft-in { padding-top: 64px; padding-bottom: 40px; }
+  .sg .ft-top { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+  .sg .ft-id { grid-column: 1 / -1; }
+  .sg .ft-c1 { grid-column: 1; }
+  .sg .ft-c2 { grid-column: 2; }
+  .sg .ft-c3 { grid-column: 1 / -1; }
+  .sg .ft-row { margin-top: 80px; flex-direction: column; align-items: flex-start; gap: 0; }
+  .sg .ft-c { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg .ft-a .arrow-ne { transition: none; }
+}
