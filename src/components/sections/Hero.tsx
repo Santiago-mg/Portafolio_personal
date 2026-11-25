@@ -28,6 +28,7 @@ const T = {
     avail: 'Open to junior full-stack & QA roles and internships',
     summary: 'Quality summary: 415 unit tests, 32 end-to-end scenarios, 37 defects fixed, Quality Gate passed.',
     hint: 'move the cursor to compile',
+    hintTouch: 'drag across the photo to compile',
     on: 'Show code version',
     off: 'Show photo',
     alt: 'Santiago González, portrait',
@@ -40,6 +41,7 @@ const T = {
     avail: 'Disponible para roles junior full-stack, QA y prácticas',
     summary: 'Resumen de calidad: 415 pruebas unitarias, 32 escenarios E2E, 37 defectos corregidos, Quality Gate aprobado.',
     hint: 'mueve el cursor para compilar',
+    hintTouch: 'desliza sobre la foto para compilar',
     on: 'Ver versión en código',
     off: 'Ver foto',
     alt: 'Santiago González, retrato',
@@ -74,11 +76,11 @@ export default function Hero() {
           <div className="hero-main">
             {lang === 'en' ? (
               <h1 id="hero-h" className="disp t-hero hero-h">
-                I build<br />software<br />that <span className="stroke-host">passes.<DrawStroke variant="underline" color="pass" delay={2300} /></span>
+                I build<br />software<br />that <span className="stroke-host">passes.<DrawStroke variant="underline" color="pass" delay={900} /></span>
               </h1>
             ) : (
               <h1 id="hero-h" className="disp hero-h" style={{ fontSize: 'clamp(40px, 5vw, 84px)' }}>
-                Construyo software que pasa <span className="stroke-host">todas las pruebas.<DrawStroke variant="underline" color="pass" delay={2300} /></span>
+                Construyo software que pasa <span className="stroke-host">todas las pruebas.<DrawStroke variant="underline" color="pass" delay={900} /></span>
               </h1>
             )}
             <p className="t-lead">{t.lead}</p>
@@ -98,7 +100,7 @@ export default function Hero() {
             </div>
           </div>
           <div className="hero-photo">
-            <CodePortrait src="/santiago.webp" alt={t.alt} hint={t.hint} toggleOn={t.on} toggleOff={t.off} />
+            <CodePortrait src="/santiago.webp" alt={t.alt} hint={t.hint} hintTouch={t.hintTouch} toggleOn={t.on} toggleOff={t.off} />
           </div>
         </div>
       </div>

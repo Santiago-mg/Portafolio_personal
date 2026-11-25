@@ -19,9 +19,9 @@ const CODE =
 
 const OBJECT_Y = 0.3; // must match objectPosition on the <Image>
 
-type Props = { src: string; alt: string; hint: string; toggleOn: string; toggleOff: string };
+type Props = { src: string; alt: string; hint: string; hintTouch: string; toggleOn: string; toggleOff: string };
 
-export default function CodePortrait({ src, alt, hint, toggleOn, toggleOff }: Props) {
+export default function CodePortrait({ src, alt, hint, hintTouch, toggleOn, toggleOff }: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [full, setFull] = useState(false);
@@ -67,13 +67,18 @@ export default function CodePortrait({ src, alt, hint, toggleOn, toggleOff }: Pr
       c.fillRect(0, 0, code.width, code.height);
       c.font = `600 ${cell * 1.15 * dpr}px ${getComputedStyle(box).getPropertyValue('--f-mono') || 'monospace'}`;
       c.textBaseline = 'top';
+      // Stretch the luminance range (2nd–98th percentile) so the face, not the wall, carries the contrast.
+      const lums = new Float32Array(cols * rows);
+      for (let j = 0; j < lums.length; j++) lums[j] = (0.299 * px[j * 4] + 0.587 * px[j * 4 + 1] + 0.114 * px[j * 4 + 2]) / 255;
+      const sorted = Float32Array.from(lums).sort();
+      const lo = sorted[Math.floor(sorted.length * 0.02)], hi = sorted[Math.floor(sorted.length * 0.98)];
+      const span = Math.max(0.05, hi - lo);
       let k = 0;
       for (let r = 0; r < rows; r++) {
         for (let q = 0; q < cols; q++) {
-          const i = (r * cols + q) * 4;
-          const lum = (0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]) / 255;
-          const a = Math.min(1, 0.08 + Math.pow(lum, 1.6) * 1.1);
-          c.fillStyle = lum > 0.82 ? `rgba(214,255,228,${a})` : `rgba(60,203,127,${a})`;
+          const v = Math.min(1, Math.max(0, (lums[r * cols + q] - lo) / span));
+          const a = 0.07 + Math.pow(v, 1.15) * 0.93;
+          c.fillStyle = v > 0.9 ? `rgba(220,255,232,${a})` : `rgba(74,222,140,${a})`;
           c.fillText(CODE[k++ % CODE.length], q * cell * dpr, r * cell * 1.25 * dpr);
         }
       }
@@ -206,7 +211,7 @@ export default function CodePortrait({ src, alt, hint, toggleOn, toggleOff }: Pr
         <canvas ref={canvasRef} className="cp-canvas" aria-hidden="true" />
       </div>
       <figcaption className="cp-cap">
-        <span className="meta">fig. 01 · santiago.tsx — {hint}</span>
+        <span className="meta">fig. 01 · santiago.tsx — <span className="cp-hint-pointer">{hint}</span><span className="cp-hint-touch">{hintTouch}</span></span>
         <button type="button" className="b b-2 b-sm" aria-pressed={full} onClick={() => setFull((v) => !v)}>
           {full ? toggleOff : toggleOn}
         </button>

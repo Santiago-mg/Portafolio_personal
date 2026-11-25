@@ -37,8 +37,8 @@ export default function SiteProvider({ children }: { children: React.ReactNode }
       const th = localStorage.getItem('sg-theme') as Theme | null;
       const lg = localStorage.getItem('sg-lang') as Lang | null;
       if (th === 'light' || th === 'dark' || th === 'contrast') setThemeState(th);
+      // English by default (the design's language for every section); Spanish only when chosen.
       if (lg === 'en' || lg === 'es') setLangState(lg);
-      else if (navigator.language?.toLowerCase().startsWith('es')) setLangState('es');
     } catch {}
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
