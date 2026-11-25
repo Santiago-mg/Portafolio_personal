@@ -31,6 +31,7 @@ export default function SiteProvider({ children }: { children: React.ReactNode }
   const [theming, setTheming] = useState(false);
   const t = useRef<number | undefined>(undefined);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- persisted prefs exist only in the browser; read them after hydration to avoid a mismatch */
   useEffect(() => {
     try {
       const th = localStorage.getItem('sg-theme') as Theme | null;
@@ -40,6 +41,7 @@ export default function SiteProvider({ children }: { children: React.ReactNode }
       else if (navigator.language?.toLowerCase().startsWith('es')) setLangState('es');
     } catch {}
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     document.documentElement.lang = lang;
