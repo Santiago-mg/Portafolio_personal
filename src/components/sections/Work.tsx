@@ -1,5 +1,5 @@
-import RevealText from '@/components/fx/RevealText';
 import ProjectPoster from '@/components/ProjectPoster';
+import SectionHead from '@/components/sections/SectionHead';
 import { FEATURED, MORE, type Project } from '@/content/projects';
 
 const SPANS = ['s7 t12', 's5 t12', 's6 t6', 's6 t6', 's4 t6', 's4 t6'];
@@ -37,8 +37,8 @@ function Card({ p, i }: { p: Project; i: number }) {
         </ul>
         <div className="card-foot">
           {p.links.map((l) => (
-            <a key={l.href} className="tag above" href={l.href} target="_blank" rel="noopener">
-              <span className="ul">{l.label}</span> <span aria-hidden="true">↗</span>
+            <a key={l.href} className="wl above" href={l.href} target="_blank" rel="noopener">
+              <span>{l.label}</span> <span className="ne" aria-hidden="true">↗</span>
               <span className="sr"> — {p.name}{NEW_TAB}</span>
             </a>
           ))}
@@ -57,13 +57,16 @@ function Card({ p, i }: { p: Project; i: number }) {
 
 export default function Work() {
   return (
-    <section className="sec" id="work" aria-labelledby="work-h" style={{ borderTop: 0 }}>
+    <section className="sec" id="work" aria-labelledby="work-h">
       <div className="wrap">
-        <div className="g12 sec-head">
-          <p className="label s12">01 — Build</p>
-          <RevealText as="h2" id="work-h" className="disp-s t-h2 s7 t12">Selected work</RevealText>
-          <p className="t-small s5 t12">Six projects, each with the checks it passed. Team work is labelled as team work, and private repositories show no code link.</p>
-        </div>
+        <SectionHead
+          id="work-h"
+          n="01"
+          step={1}
+          label="Build"
+          title={['Selected', 'work']}
+          intro="Six projects, each with the checks it passed. Team work is labelled as team work, and private repositories show no code link."
+        />
 
         <div className="g12" style={{ rowGap: 24 }}>
           {FEATURED.map((p, i) => <Card key={p.id} p={p} i={i} />)}

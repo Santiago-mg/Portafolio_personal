@@ -11,7 +11,7 @@ export default function Pyramid() {
   return (
     <div className="pyr">
       <div>
-        <p className="label" style={{ marginBottom: 16 }}>
+        <p className="label pyr-l">
           Test pyramid · bottom to top
         </p>
         <ol className="pyr-levels" aria-label="Test levels">
@@ -31,7 +31,7 @@ export default function Pyramid() {
             </li>
           ))}
         </ol>
-        <p className="meta" style={{ marginTop: 16 }}>
+        <p className="meta pyr-note">
           Counts are from team projects; the case studies say who wrote what.
         </p>
       </div>
@@ -39,7 +39,7 @@ export default function Pyramid() {
       <div id="pyr-panel" aria-live="polite" className="q-panel-wrap">
         <div key={cur.key} className="panel reveal q-panel">
           <div className="q-panel-head">
-            <h3 className="disp-s t-h4" style={{ fontSize: 24 }}>
+            <h3 className="disp-s q-panel-t">
               {cur.title}
             </h3>
             <span className="chk">{cur.chk}</span>

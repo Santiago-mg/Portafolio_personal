@@ -9,16 +9,16 @@ export default function DefectLog() {
   return (
     <div className="dlog">
       <div className="dlog-head">
-        <span className="meta" style={{ color: 'var(--ink)' }}>
+        <span className="meta dlog-src">
           opencart 4.1.0.3 · 6 of 37 shown
         </span>
         <a
-          className="tag"
+          className="wl"
           href="https://github.com/Santiago-mg/opencart/blob/master/tests/DEFECTOS_CORREGIDOS.md"
           target="_blank"
           rel="noopener"
         >
-          <span className="ul">All 37 on GitHub ↗</span>
+          <span>All 37 on GitHub <span className="ne">↗</span></span>
         </a>
       </div>
       <div className="dlog-cols label" aria-hidden="true">
@@ -61,7 +61,7 @@ export default function DefectLog() {
                     <li aria-hidden="true">→</li>
                     <li>{d.mid}</li>
                     <li aria-hidden="true">→</li>
-                    <li style={{ color: 'var(--pass-ink)' }}>{d.last}</li>
+                    <li className="q-def-last">{d.last}</li>
                   </ol>
                 </div>
               )}

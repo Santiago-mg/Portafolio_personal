@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import RevealText from '@/components/fx/RevealText';
+import SectionHead from '@/components/sections/SectionHead';
 
 type Item = { ver: string; cls?: string; meta: string; title: string; text?: string };
 const ITEMS: Item[] = [
@@ -44,26 +44,22 @@ export default function Changelog() {
   return (
     <section className="sec" id="log" aria-labelledby="log-h">
       <div className="wrap">
-        <div className="g12 sec-head">
-          <p className="label s12">04 — Log</p>
-          <RevealText as="h2" id="log-h" className="disp-s t-h2 s7 t12">Changelog</RevealText>
-          <p className="t-small s5 t12">From a first Python project in 2023 to a passed Quality Gate in November 2026. Newest first.</p>
-        </div>
+        <SectionHead
+          id="log-h"
+          n="04"
+          step={4}
+          label="Log"
+          title="Changelog"
+          intro="From a first Python project in 2023 to a passed Quality Gate in November 2026. Newest first."
+        />
         <ol className="tl" ref={ref}>
           {ITEMS.map((it, i) => (
-            <li
-              className="tl-item"
-              key={it.ver}
-              style={{
-                ['--i' as string]: i,
-                ...(i === ITEMS.length - 1 ? { borderBottom: 'var(--bw) solid var(--rule)' } : null),
-              }}
-            >
+            <li className="tl-item" key={it.ver} style={{ ['--i' as string]: i }}>
               <span className={`ver${it.cls ? ` ${it.cls}` : ''}`}>{it.ver}</span>
-              <span className="meta">{it.meta}</span>
+              <span className="meta tl-when">{it.meta}</span>
               <div className="tl-body">
-                <p className="t-h4" style={{ fontWeight: 600 }}>{it.title}</p>
-                {it.text ? <p className="t-small" style={{ marginTop: 4 }}>{it.text}</p> : null}
+                <p className="t-h4 tl-t">{it.title}</p>
+                {it.text ? <p className="t-small tl-x">{it.text}</p> : null}
               </div>
             </li>
           ))}

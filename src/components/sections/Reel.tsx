@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSite } from '@/components/site/SiteProvider';
-import RevealText from '@/components/fx/RevealText';
+import SectionHead from '@/components/sections/SectionHead';
 import ProjectPoster from '@/components/ProjectPoster';
 import CircularGallery, { type GalleryItem } from '@/components/gallery/CircularGallery';
 import { POSTER_RADIUS, POSTER_SIZE, projectPosters } from '@/components/gallery/posterImages';
@@ -14,7 +14,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 const T = {
   en: {
-    title: 'Everything I’ve shipped',
+    title: ['Everything', 'I’ve shipped'] as const,
     text: `Drag or swipe through all ${N} projects.`,
     aria: 'Project reel',
     newTab: ' (opens in a new tab)',
@@ -23,7 +23,7 @@ const T = {
     hint: 'drag · shift + scroll',
   },
   es: {
-    title: 'Todo lo que he entregado',
+    title: ['Todo lo que', 'he entregado'] as const,
     text: `Arrastra o desliza para recorrer los ${N} proyectos.`,
     aria: 'Carrusel de proyectos',
     newTab: ' (se abre en una pestaña nueva)',
@@ -114,7 +114,7 @@ export default function Reel() {
     if (item.href) window.open(item.href, '_blank', 'noopener');
   }, []);
 
-  const font = tokens ? `700 semi-expanded 30px ${tokens.disp}` : undefined;
+  const font = tokens ? `500 30px ${tokens.disp}` : undefined;
   const ready = gl === 'yes' && near && items && tokens;
   const p = PROJECTS[active] ?? PROJECTS[0];
   const link = p.links[0];
@@ -123,13 +123,7 @@ export default function Reel() {
   return (
     <section className="sec fx-reel" id="reel" aria-labelledby="reel-h">
       <div className="wrap">
-        <div className="g12 sec-head">
-          <p className="label s12">Reel</p>
-          <RevealText as="h2" id="reel-h" className="disp-s t-h2 s7 t12">
-            {t.title}
-          </RevealText>
-          <p className="t-small s5 t12">{t.text}</p>
-        </div>
+        <SectionHead id="reel-h" step={4} label="Reel" title={t.title} intro={t.text} />
       </div>
 
       {gl === 'yes' ? (
@@ -153,7 +147,7 @@ export default function Reel() {
                 scrollEase={0.06}
                 wave={0.6}
                 fadeEdges={0.1}
-                shadow={0.2}
+                shadow={0}
                 snap
                 autoScroll={0}
                 openOnClick={false}
@@ -172,8 +166,8 @@ export default function Reel() {
               <span className="hide-m">{p.year}</span>
             </p>
             {link ? (
-              <a className="tag" href={link.href} target="_blank" rel="noopener" tabIndex={ready ? undefined : -1}>
-                <span className="ul">{link.label}</span> <span aria-hidden="true">↗</span>
+              <a className="wl" href={link.href} target="_blank" rel="noopener" tabIndex={ready ? undefined : -1}>
+                <span>{link.label}</span> <span className="ne" aria-hidden="true">↗</span>
                 <span className="sr">
                   {' '}
                   — {p.name}

@@ -8,13 +8,13 @@ const COPY = {
   en: {
     label: 'Menu', primary: 'Primary', home: 'Santiago González, back to top', close: 'Close menu',
     links: [['work', 'Work'], ['quality', 'Quality'], ['skills', 'Skills'], ['about', 'About'], ['contact', 'Contact']],
-    language: 'Language', theme: 'Theme', light: 'Light', dark: 'Dark', hc: 'HC', hcLabel: 'High contrast',
+    language: 'Language', theme: 'Theme', hcLabel: 'High contrast',
     hire: 'Hire me', avail: 'Open to junior full-stack & QA roles and internships',
   },
   es: {
     label: 'Menú', primary: 'Principal', home: 'Santiago González, inicio', close: 'Cerrar menú',
     links: [['work', 'Proyectos'], ['quality', 'Calidad'], ['skills', 'Habilidades'], ['about', 'Sobre mí'], ['contact', 'Contacto']],
-    language: 'Idioma', theme: 'Tema', light: 'Claro', dark: 'Oscuro', hc: 'AC', hcLabel: 'Alto contraste',
+    language: 'Idioma', theme: 'Tema', hcLabel: 'Alto contraste',
     hire: 'Contrátame', avail: 'Disponible para roles junior full-stack, QA y prácticas',
   },
 } as const;
@@ -88,11 +88,10 @@ export default function MobileMenu({ onClose }: { onClose: (restoreFocus?: boole
           </div>
           <div className="mm-row">
             <span className="label" aria-hidden="true">{t.theme}</span>
-            <div className="seg" role="group" aria-label={t.theme}>
-              <button type="button" aria-pressed={theme === 'light'} onClick={() => setTheme('light')}>{t.light}</button>
-              <button type="button" aria-pressed={theme === 'dark'} onClick={() => setTheme('dark')}>{t.dark}</button>
-              <button type="button" aria-pressed={theme === 'contrast'} aria-label={t.hcLabel} onClick={() => setTheme('contrast')}>{t.hc}</button>
-            </div>
+            <button type="button" className="hc-tog" aria-pressed={theme === 'contrast'} onClick={() => setTheme(theme === 'contrast' ? 'dark' : 'contrast')}>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8" cy="8" r="5.75" /><path d="M8 2.25A5.75 5.75 0 0 1 8 13.75Z" fill="currentColor" stroke="none" /></svg>
+              <span>{t.hcLabel}</span>
+            </button>
           </div>
         </div>
       </nav>

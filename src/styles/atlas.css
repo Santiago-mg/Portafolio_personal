@@ -1,0 +1,152 @@
+/* =====================================================================
+   Atlas layer — "industrial romanticism" over the Build verde system.
+   Charcoal ground, warm cream foreground, one grotesk, square corners,
+   hairline drafting guides. Green keeps one meaning: passed.
+   Loaded last: it re-maps sg.css tokens and component shapes.
+   ===================================================================== */
+
+/* ---------- tokens (every theme except high contrast) ---------- */
+.sg:not([data-theme="contrast"]) {
+  --paper: #181818;            /* charcoal canvas */
+  --raised: #181818;           /* no raised cards: surfaces stay flat */
+  --sunken: #141414;
+  --ink: #fffde0;              /* warm cream */
+  --ink-2: #d6d4bd;            /* 11.9:1 */
+  --muted: #8f8e85;            /* 5.4:1 — the guide's #72726b fails AA for small text */
+  --rule: #2f2f2c;             /* cream at .1 over charcoal */
+  --rule-2: #3d3d39;           /* cream at .15, panel outlines */
+  --pass: #3ccb7f;
+  --pass-ink: #5bd995;
+  --pass-tint: rgba(60, 203, 127, .12);
+  --pending: #e0a040; --pending-tint: rgba(224, 160, 64, .12);
+  --fail: #f07a62; --fail-tint: rgba(240, 122, 98, .12);
+  --code-bg: #141414; --code-str: #d9b88a;
+  --focus: #fffde0;
+  --wash: rgba(192, 192, 192, .1);
+  --shadow: none; --shadow-pop: 0 0 0 1px var(--rule-2), 0 40px 80px -20px rgba(0, 0, 0, .7);
+  --scrim: rgba(10, 10, 10, .72);
+  color-scheme: dark;
+}
+.sg {
+  --f-disp: var(--font-inter), 'Inter', Arial, sans-serif;
+  --f-text: var(--font-inter), 'Inter', Arial, sans-serif;
+  --f-mono: var(--font-inter), 'Inter', Arial, sans-serif; /* labels share the grotesk */
+  --f-code: var(--font-plex-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+  --track: -0.03em;
+  --gutter: clamp(20px, 4.4vw, 64px);
+  font-family: var(--f-text);
+  font-weight: 400;
+  background: var(--paper);
+}
+.sg[data-theme="contrast"] { --rule-2: #000000; --wash: rgba(0, 0, 0, .06); }
+html:has(.sg:not([data-theme="contrast"])) { background: #181818; }
+
+/* ---------- shape: square corners everywhere, round only for status dots ---------- */
+.sg *, .sg *::before, .sg *::after { border-radius: 0 !important; }
+.sg .dot, .sg .pl-dot, .sg .pl-pend, .sg .pl-ok, .sg .chk::before, .sg .flow-sub li::before { border-radius: 50% !important; }
+
+/* ---------- type recipes ---------- */
+.sg .disp, .sg .disp-s {
+  font-family: var(--f-disp); font-stretch: normal; font-weight: 500;
+  letter-spacing: var(--track); line-height: .906; text-transform: uppercase;
+}
+.sg .t-hero { font-size: clamp(44px, 6.4vw, 96px); }
+.sg .t-h2 { font-size: clamp(40px, 4.45vw, 64px); }
+.sg .t-h3 { font-size: clamp(24px, 2.1vw, 30px); line-height: 1; }
+.sg .t-h4 { font-weight: 500; }
+.sg .t-lead { font-size: clamp(19px, 1.7vw, 24px); line-height: 1.17; color: var(--ink-2); font-weight: 400; letter-spacing: -.01em; }
+.sg .t-body, .sg .t-small { color: var(--ink-2); }
+.sg .t-small { font-size: 16px; line-height: 23px; }
+.sg .label { font-family: var(--f-text); font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; color: var(--muted); }
+.sg .meta { font-family: var(--f-text); font-size: 14px; line-height: 1.1667; color: var(--muted); }
+.sg .mono { font-family: var(--f-text); }
+.sg .code, .sg code, .sg pre, .sg kbd, .sg .kbd { font-family: var(--f-code); }
+.sg ::selection { background: var(--pass-tint); color: var(--ink); }
+.sg :focus-visible { outline: 1px solid var(--focus); outline-offset: 3px; }
+
+/* ---------- actions: equipment labels ---------- */
+.sg .b {
+  min-height: 40px; padding: 0 14px; gap: 10px;
+  font-family: var(--f-text); font-size: 12px; font-weight: 500; letter-spacing: var(--track); text-transform: uppercase;
+  border-width: 1px;
+  transition: transform 140ms var(--ease-out), opacity 200ms ease-in-out, background-color 200ms ease-in-out, color 200ms ease-in-out, border-color 200ms ease-in-out;
+}
+.sg .b-1 { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.sg .b-2 { background: transparent; border-color: var(--ink); color: var(--ink); }
+.sg .b-t { padding: 0 8px; min-height: 28px; background: var(--wash); color: var(--ink); }
+.sg .b-sm { min-height: 32px; font-size: 12px; }
+@media (hover: hover) and (pointer: fine) {
+  .sg .b-1:hover { background: var(--ink); border-color: var(--ink); opacity: .86; }
+  .sg .b-2:hover { background: var(--ink); color: var(--paper); }
+  .sg .b-t:hover { color: var(--ink); opacity: .8; }
+}
+.sg .tag { font-family: var(--f-text); font-size: 12px; letter-spacing: var(--track); }
+
+/* ---------- badges and chips ---------- */
+.sg .chk { height: 24px; padding: 0 8px; font-family: var(--f-text); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; background: var(--pass-tint); color: var(--pass-ink); }
+.sg .chip { height: 26px; border-color: var(--rule-2); color: var(--ink-2); font-family: var(--f-text); font-size: 12px; }
+.sg .pend { border-radius: 0; }
+
+/* ---------- surfaces: flat, hairlines, corner markers ---------- */
+.sg .panel, .sg .dlog, .sg .sk-panel, .sg .dialog, .sg .flow-step, .sg .card {
+  background-color: transparent; border-color: var(--rule-2); box-shadow: none;
+}
+/* Corner-marked panels: four small cream squares, no fill. */
+.sg .panel, .sg .sk-panel, .sg .flow-step {
+  background-image:
+    linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--ink), var(--ink)),
+    linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--ink), var(--ink));
+  background-size: 4px 4px; background-repeat: no-repeat;
+  background-position: -1px -1px, calc(100% + 1px) -1px, -1px calc(100% + 1px), calc(100% + 1px) calc(100% + 1px);
+}
+.sg .dialog { background-color: var(--paper); }
+.sg .code { background: var(--code-bg); border-color: var(--rule); }
+
+/* ---------- sections: paired hairlines between scenes ---------- */
+/* Two parallel 1px rules, 8px apart (the second is a background line, not a shadow). */
+.sg .sec { border-top: 1px solid var(--rule); box-shadow: none; background-image: linear-gradient(var(--rule), var(--rule)); background-size: 100% 1px; background-position: 0 8px; background-repeat: no-repeat; }
+.sg .sec-head .label { color: var(--ink); }
+
+/* ---------- fixed navigation, no opaque band ---------- */
+.sg .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 40; background: transparent; border-bottom: 0; pointer-events: none; }
+.sg .nav::before { content: ""; position: absolute; inset: 0 0 -32px; background: linear-gradient(#181818 0%, rgba(24, 24, 24, .86) 45%, rgba(24, 24, 24, 0) 100%); pointer-events: none; }
+.sg[data-theme="contrast"] .nav::before { background: linear-gradient(#ffffff 0%, rgba(255, 255, 255, .9) 55%, rgba(255, 255, 255, 0) 100%); }
+.sg .nav-in { position: relative; height: auto; min-height: 72px; padding-top: 16px; padding-bottom: 8px; align-items: flex-start; gap: 16px 20px; flex-wrap: wrap; pointer-events: none; max-width: none; padding-left: 32px; padding-right: 32px; }
+.sg .nav-in > * { pointer-events: auto; }
+.sg .logo-mark { background: var(--ink); color: var(--paper); font-family: var(--f-text); font-weight: 500; }
+.sg .logo-name { font-family: var(--f-text); font-stretch: normal; font-weight: 500; text-transform: uppercase; letter-spacing: var(--track); font-size: 14px; }
+.sg .nav-links { margin: 0; gap: 6px; order: 3; flex-basis: 100%; }
+.sg .nav-links a { min-height: 28px; height: 28px; padding: 0 9px; border: 1px solid var(--ink); color: var(--ink); font-size: 12px; font-weight: 500; letter-spacing: var(--track); text-transform: uppercase; }
+.sg .nav-links a .ul::after { display: none; }
+.sg .nav-links a.on, .sg .nav-links a[aria-current="true"] { background: var(--ink); color: var(--paper); }
+@media (hover: hover) and (pointer: fine) { .sg .nav-links a:not(.on):hover { background: var(--wash); } }
+.sg .nav-tools { margin-left: auto; }
+.sg .seg { border-color: var(--rule-2); background: transparent; padding: 0; gap: 0; }
+.sg .seg button, .sg .seg a { height: 32px; min-width: 36px; font-family: var(--f-text); font-size: 12px; }
+@media (max-width: 1100px) { .sg .nav-links { display: none; } }
+@media (max-width: 767px) { .sg .nav-in { padding-left: 20px; padding-right: 20px; min-height: 64px; } }
+/* Content under the fixed nav */
+.sg main { position: relative; z-index: 1; }
+
+/* ---------- the rest of the shared components ---------- */
+.sg .lvl { background: transparent; border-color: var(--rule-2); font-family: var(--f-text); text-transform: uppercase; font-size: 13px; letter-spacing: var(--track); }
+.sg .lvl[aria-expanded="true"] { background: var(--pass-tint); border-color: var(--pass); }
+.sg .sk-btn { font-family: var(--f-text); border-color: var(--rule-2); }
+.sg .sk-btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.sg .ver { font-family: var(--f-text); font-size: 12px; text-transform: uppercase; border-color: var(--ink); }
+.sg .evi-n { font-family: var(--f-disp); font-weight: 500; letter-spacing: var(--track); }
+.sg .evi-n sup { font-family: var(--f-text); }
+.sg .mail { font-family: var(--f-disp); font-stretch: normal; font-weight: 500; letter-spacing: var(--track); }
+.sg .status-in, .sg .pl-txt, .sg .spec dl, .sg .flow-sub, .sg .def-id, .sg .cmd-item .hint { font-family: var(--f-text); }
+.sg .pl-txt { text-transform: uppercase; font-size: 12px; font-weight: 500; letter-spacing: 0; }
+.sg .ph { background-color: transparent; }
+
+/* ---------- drafting guides (fixed, faint, paired rules) ---------- */
+.sg .guides { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.sg .guides i { position: absolute; top: 0; bottom: 0; width: 9px; border-left: 1px solid rgba(255, 253, 224, .06); border-right: 1px solid rgba(255, 253, 224, .06); }
+.sg[data-theme="contrast"] .guides { display: none; }
+
+/* ---------- scroll progress rail ---------- */
+.sg .rail { position: fixed; right: 0; top: 0; z-index: 45; width: 6px; height: 160px; background: var(--ink); pointer-events: none; will-change: transform; }
+@media (max-width: 767px) { .sg .rail { width: 4px; height: 96px; } }
+@media (prefers-reduced-motion: reduce) { .sg .rail { display: none; } }

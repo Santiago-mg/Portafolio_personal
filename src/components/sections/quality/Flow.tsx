@@ -25,8 +25,8 @@ export default function Flow() {
         const items = [
           <li
             key={s.label}
-            className="flow-step stg-i"
-            style={{ '--d': `${DELAYS[n++]}ms`, ...(s.pass ? { borderColor: 'var(--pass)' } : {}) } as React.CSSProperties}
+            className={`flow-step stg-i${s.pass ? ' is-pass' : ''}`}
+            style={{ '--d': `${DELAYS[n++]}ms` } as React.CSSProperties}
           >
             <span className="label">{s.label}</span>
             <ul className="flow-sub">

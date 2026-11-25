@@ -1,29 +1,83 @@
-/* Owned by the sections-c agent. */
+/* Owned by the sections-c agent. Skills, Changelog, About (+ shared Contact / footer link basics).
+   Atlas: outlined tabs, outlined version tags, hairline rows, a square photo frame. */
 
-/* Skills */
-.sg .sk-note{margin-top:12px}
-.sg .sk-btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+/* =====================================================================
+   Skills — outlined tabs (pressed = cream fill) and a corner-marked panel
+   ===================================================================== */
+.sg .skills { gap: 56px; }
+.sg .sk-group { grid-template-columns: 150px minmax(0, 1fr); gap: 12px 24px; padding: 16px 0; border-top: 1px solid var(--rule); }
+.sg .sk-gl { padding-top: 7px; }
+.sg .sk-list { gap: 6px; }
+.sg .sk-btn {
+  min-height: 28px; height: 28px; padding: 0 9px; border: 1px solid var(--rule-2); background: transparent; color: var(--ink-2);
+  font-family: var(--f-text); font-size: 12px; font-weight: 500; letter-spacing: var(--track); text-transform: uppercase;
+  transition: transform 140ms var(--ease-out);
+}
+.sg .sk-btn[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+@media (max-width: 767px) { .sg .sk-group { grid-template-columns: minmax(0, 1fr); gap: 10px; } .sg .sk-gl { padding-top: 0; } }
+@media (hover: hover) and (pointer: fine) { .sg .sk-btn:not([aria-pressed="true"]):hover { border-color: var(--ink); color: var(--ink); } }
+/* Below the fixed nav (two rows plus its fade). */
+.sg .sk-panel { top: 128px; padding: 24px; border: 1px solid var(--rule-2); }
+.sg .sk-name { margin-top: 12px; font-size: 28px; line-height: 1; }
+.sg .sk-count { margin-top: 8px; font-size: 12px; line-height: 16px; font-weight: 500; text-transform: uppercase; }
+.sg .sk-note { margin-top: 12px; font-size: 14px; line-height: 20px; }
+.sg .sk-proj { margin-top: 20px; }
+.sg .sk-proj li { padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 15px; line-height: 20px; color: var(--muted); transition: none; }
+.sg .sk-proj li:last-child { border-bottom: 0; }
+.sg .sk-proj li.on { color: var(--ink); font-weight: 500; }
 
-/* Changelog: stagger in once. Hidden state exists only after JS arms it (.is-armed). */
-.sg .tl.is-armed .tl-item{opacity:0; transform:translateY(8px)}
-.sg .tl.is-armed.is-in .tl-item{opacity:1; transform:none; transition:opacity 300ms var(--ease-out), transform 300ms var(--ease-out); transition-delay:calc(var(--i, 0) * 50ms)}
+/* =====================================================================
+   Changelog — outlined version tags (current = green), hairline rows
+   ===================================================================== */
+.sg .tl { border-bottom: 1px solid var(--rule); }
+.sg .tl-item { grid-template-columns: 110px 170px minmax(0, 1fr); gap: 24px; align-items: baseline; padding: 24px 0; border-top: 1px solid var(--rule); }
+.sg .ver { height: 24px; padding: 0 8px; border: 1px solid var(--ink); font-family: var(--f-text); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; }
+.sg .ver-cur { border-color: var(--pass); background: var(--pass-tint); color: var(--pass-ink); }
+.sg .ver-next { border-style: dashed; border-color: var(--muted); color: var(--muted); }
+.sg .tl-when { font-size: 12px; line-height: 16px; font-weight: 500; text-transform: uppercase; color: var(--muted); }
+.sg .tl-t { font-size: 20px; line-height: 24px; font-weight: 500; color: var(--ink); }
+.sg .tl-x { margin-top: 6px; max-width: 60ch; }
+@media (max-width: 767px) { .sg .tl-item { grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; padding: 20px 0; } }
 
-/* About photo: 4:5 frame, clip-path reveal from the bottom */
-.sg .about-photo{position:relative; aspect-ratio:4 / 5; overflow:hidden; border:var(--bw) solid var(--rule); border-radius:12px; background:var(--raised)}
-.sg .about-photo.is-armed{clip-path:inset(100% 0 0 0)}
-.sg .about-photo.is-armed.is-in{clip-path:inset(0 0 0 0); transition:clip-path 600ms var(--ease-io)}
+/* Stagger in once. Hidden state exists only after JS arms it (.is-armed). Calm: short rise, long ease. */
+.sg .tl.is-armed .tl-item { opacity: 0; transform: translateY(6px); }
+.sg .tl.is-armed.is-in .tl-item { opacity: 1; transform: none; transition: opacity 450ms var(--ease-out), transform 450ms var(--ease-out); transition-delay: calc(var(--i, 0) * 50ms); }
 
-/* Contact / footer links */
-.sg a.mail{text-decoration:none}
-.sg a.mail:focus-visible, .sg .mail:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:4px}
-.sg .ct-link{display:inline-flex; align-items:center; min-height:44px; text-decoration:none}
-.sg .st-link{display:inline-flex; align-items:center; min-height:24px; font-size:12px; text-decoration:none}
-.sg .ct-link:focus-visible, .sg .st-link:focus-visible{outline:2px solid var(--ink); outline-offset:3px; border-radius:2px}
-@media (hover:hover) and (pointer:fine){
-  .sg .ct-link:hover .ul::after, .sg .st-link:hover .ul::after{transform:scaleX(1); transform-origin:left center}
+/* =====================================================================
+   About — square frame, hairline, corner marks; the photo in the stage's
+   warm grayscale. Clip-path reveal from the bottom.
+   ===================================================================== */
+.sg .about { row-gap: 48px; align-items: start; }
+.sg .about-r { display: flex; flex-direction: column; gap: 28px; }
+@media (min-width: 1024px) { .sg .about-r { grid-column: 6 / -1; } }
+.sg .about-photo { position: relative; aspect-ratio: 4 / 5; border: 1px solid var(--rule-2); background: var(--sunken); }
+.sg .about-photo img { filter: grayscale(1) sepia(.14) brightness(.9) contrast(1.05); }
+.sg[data-theme="contrast"] .about-photo img { filter: none; }
+.sg .about-photo::after {
+  content: ""; position: absolute; inset: -1px; z-index: 1; pointer-events: none;
+  background-image: linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--ink), var(--ink)), linear-gradient(var(--ink), var(--ink));
+  background-size: 4px 4px; background-repeat: no-repeat; background-position: 0 0, 100% 0, 0 100%, 100% 100%;
+}
+.sg .about-photo.is-armed { clip-path: inset(100% 0 0 0); }
+.sg .about-photo.is-armed.is-in { clip-path: inset(0 0 0 0); transition: clip-path 800ms var(--ease-io); }
+.sg .about-spec { max-width: 620px; }
+.sg .about-spec dl { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 24px; row-gap: 12px; font-family: var(--f-text); font-size: 15px; line-height: 20px; }
+.sg .about-spec dt { font-size: 12px; font-weight: 500; text-transform: uppercase; color: var(--muted); }
+.sg .about-spec dd { color: var(--ink); }
+
+/* =====================================================================
+   Contact / footer links (base only; the scenes layer styles the closing)
+   ===================================================================== */
+.sg a.mail { text-decoration: none; }
+.sg .ct-link { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.sg .st-link { display: inline-flex; align-items: center; min-height: 24px; font-size: 12px; text-decoration: none; }
+@media (hover: hover) and (pointer: fine) {
+  .sg .ct-link:hover .ul::after, .sg .st-link:hover .ul::after { transform: scaleX(1); transform-origin: left center; }
 }
 
-@media (prefers-reduced-motion: reduce){
-  .sg .tl.is-armed .tl-item{opacity:1; transform:none}
-  .sg .about-photo.is-armed{clip-path:none}
+@media (prefers-reduced-motion: reduce) {
+  .sg .tl.is-armed .tl-item { opacity: 1; transform: none; }
+  .sg .about-photo.is-armed { clip-path: none; }
+  .sg .sk-btn { transition: none; }
+  .sg .sk-btn:active { transform: none; }
 }

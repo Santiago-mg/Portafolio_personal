@@ -1,8 +1,8 @@
 import { PROJECTS, type Project } from '@/content/projects';
 
 /*
- * Canvas versions of the "technical drawing" ProjectPoster (dark tone), for the WebGL
- * galleries. Rendered once per format after the real fonts are loaded, encoded off the
+ * Canvas versions of the Atlas "technical drawing" ProjectPoster (charcoal ground, cream
+ * hairlines, faint blueprint grid, green check badges), for the WebGL galleries. Rendered once per format after the real fonts are loaded, encoded off the
  * main thread (toBlob) and cached for the session as object URLs.
  */
 
@@ -13,26 +13,33 @@ export const POSTER_SIZE: Record<PosterFormat, { width: number; height: number }
   landscape: { width: 800, height: 600 }, // Reel · CircularGallery
 };
 
-/** Corner radius as a fraction of the poster width. Pass the same radius to the WebGL masks. */
-export const POSTER_RADIUS = 0.024;
+/** Corner radius as a fraction of the poster width. Pass the same radius to the WebGL masks.
+ *  Atlas: square corners. */
+export const POSTER_RADIUS = 0;
 
 /* CSS px width each format is designed for (keeps labels/badges in ProjectPoster proportions). */
 const DESIGN_WIDTH: Record<PosterFormat, number> = { portrait: 330, landscape: 440 };
 
 const C = {
-  bg: '#0D0F0E',
-  grid: '#262A27',
-  line: '#262A27',
-  ink: '#ECEDE7',
-  mute: '#8D938E',
-  chkBg: '#12261A',
-  chkInk: '#5BD995',
-  dot: '#3CCB7F',
-  glow: 'rgba(60,203,127,0.12)',
-  glow0: 'rgba(60,203,127,0)',
+  bg: '#181818', // charcoal canvas
+  grid: 'rgba(255,253,224,0.06)', // blueprint grid
+  line: 'rgba(255,253,224,0.15)', // hairlines and the outlined numeral
+  ink: '#fffde0', // warm cream
+  mute: '#8f8e85',
+  chkBg: '#1c2d24', // --pass-tint (green at .12) flattened over the charcoal
+  chkInk: '#5bd995',
+  dot: '#3ccb7f',
 };
 
-type Fonts = { disp: string; mono: string };
+/* Display recipe (Atlas): Inter 500, uppercase, -0.03em, line-height .906. */
+const TRACK = -0.03;
+const LINE = 0.906;
+/* Inter's ascender (hhea): where the baseline sits inside a line box of LINE em. */
+const ASCENT = 0.969;
+const DESCENT = 0.242;
+const BASELINE = (LINE - ASCENT - DESCENT) / 2 + ASCENT;
+
+type Fonts = { disp: string; text: string };
 
 const cache = new Map<PosterFormat, Promise<string[]>>();
 
@@ -57,14 +64,13 @@ async function loadFonts(): Promise<Fonts> {
   const root = document.querySelector('.sg') ?? document.documentElement;
   const cs = getComputedStyle(root);
   const fonts: Fonts = {
-    disp: cs.getPropertyValue('--f-disp').trim() || "'Archivo', 'Helvetica Neue', Arial, sans-serif",
-    mono: cs.getPropertyValue('--f-mono').trim() || "'IBM Plex Mono', ui-monospace, monospace",
+    disp: cs.getPropertyValue('--f-disp').trim() || "'Inter', Arial, sans-serif",
+    text: cs.getPropertyValue('--f-text').trim() || "'Inter', Arial, sans-serif",
   };
   try {
     await Promise.all([
-      document.fonts.load(`800 expanded 100px ${fonts.disp}`, 'CelularPro 0123456789'),
-      document.fonts.load(`700 expanded 100px ${fonts.disp}`, '0123456789'),
-      document.fonts.load(`500 24px ${fonts.mono}`, 'FIG. 0123456789 · e2e'),
+      document.fonts.load(`500 100px ${fonts.disp}`, 'CELULARPRO 0123456789'),
+      document.fonts.load(`500 24px ${fonts.text}`, 'FIG. 0123456789 · E2E'),
     ]);
     await document.fonts.ready;
   } catch {
@@ -73,16 +79,11 @@ async function loadFonts(): Promise<Fonts> {
   return fonts;
 }
 
-/** Sets ctx.font, keeping the width axis where the browser supports it. */
-function setFont(ctx: CanvasRenderingContext2D, weight: number, size: number, family: string, stretch: CanvasFontStretch = 'normal') {
+/** Sets ctx.font (one grotesk, normal width). */
+function setFont(ctx: CanvasRenderingContext2D, weight: number, size: number, family: string) {
   const px = Math.max(1, Math.round(size));
   ctx.font = `${weight} ${px}px ${family}`;
-  if (stretch !== 'normal') {
-    const plain = ctx.font;
-    ctx.font = `${weight} ${stretch} ${px}px ${family}`;
-    if (ctx.font === plain || !ctx.font.includes(`${px}px`)) ctx.font = plain;
-  }
-  if ('fontStretch' in ctx) ctx.fontStretch = stretch;
+  if ('fontStretch' in ctx) ctx.fontStretch = 'normal';
 }
 
 function setTracking(ctx: CanvasRenderingContext2D, px: number) {
@@ -96,20 +97,14 @@ function ellipsize(ctx: CanvasRenderingContext2D, text: string, max: number): st
   return `${t.trimEnd()}…`;
 }
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(x, y, w, h, r);
-  else ctx.rect(x, y, w, h);
-}
-
 /** Largest name size that fits; two lines when that makes the name meaningfully bigger. */
 function fitName(ctx: CanvasRenderingContext2D, name: string, fonts: Fonts, maxW: number, maxSize: number, maxH: number) {
   const width = (text: string) => {
-    setFont(ctx, 800, 100, fonts.disp, 'expanded');
-    setTracking(ctx, -2); // -0.02em at 100px
+    setFont(ctx, 500, 100, fonts.disp);
+    setTracking(ctx, TRACK * 100);
     return ctx.measureText(text).width || 1;
   };
-  const one = Math.min(maxSize, (100 * maxW) / width(name), maxH / 0.95);
+  const one = Math.min(maxSize, (100 * maxW) / width(name), maxH / LINE);
   const words = name.split(' ');
   if (words.length < 2) return { size: one, lines: [name] };
   let best: [string, string] = [name, ''];
@@ -123,7 +118,7 @@ function fitName(ctx: CanvasRenderingContext2D, name: string, fonts: Fonts, maxW
       best = [a, b];
     }
   }
-  const two = Math.min(maxSize, (100 * maxW) / Math.max(width(best[0]), width(best[1])), maxH / (0.95 * 2));
+  const two = Math.min(maxSize, (100 * maxW) / Math.max(width(best[0]), width(best[1])), maxH / (LINE * 2));
   return two > one * 1.25 ? { size: two, lines: best } : { size: one, lines: [name] };
 }
 
@@ -142,17 +137,9 @@ function drawPoster(ctx: CanvasRenderingContext2D, format: PosterFormat, p: Proj
   ctx.textBaseline = 'alphabetic';
   setTracking(ctx, 0);
 
-  // paper + glow (radial-gradient(120% 90% at 100% 0%, glow, transparent 58%))
+  // charcoal ground (flat: colour belongs to imagery, not to the sheet)
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, W, H);
-  ctx.save();
-  ctx.setTransform(1.2 * W, 0, 0, 0.9 * H, W, 0);
-  const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
-  glow.addColorStop(0, C.glow);
-  glow.addColorStop(0.58, C.glow0);
-  ctx.fillStyle = glow;
-  ctx.fillRect(-1 / 1.2, 0, 1 / 1.2, 1 / 0.9);
-  ctx.restore();
 
   // blueprint grid (24 px cells at design size)
   const cell = 24 * s;
@@ -172,18 +159,18 @@ function drawPoster(ctx: CanvasRenderingContext2D, format: PosterFormat, p: Proj
 
   // big outlined index numeral, bottom-right, bleeding off the edge
   const numSize = Math.min(0.42 * W, 0.62 * H);
-  setFont(ctx, 700, numSize, fonts.disp, 'expanded');
-  setTracking(ctx, -0.04 * numSize);
+  setFont(ctx, 500, numSize, fonts.disp);
+  setTracking(ctx, TRACK * numSize);
   ctx.textAlign = 'right';
   ctx.strokeStyle = C.line;
-  ctx.lineWidth = Math.max(1.5, s * 1.1);
-  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(1, s);
+  ctx.lineJoin = 'miter';
   ctx.strokeText(fig, W - 14 * s, H + 0.07 * numSize);
 
   // top row: FIG label + kind
   const labelSize = 12 * s;
-  setFont(ctx, 500, labelSize, fonts.mono);
-  setTracking(ctx, 0.06 * labelSize);
+  setFont(ctx, 500, labelSize, fonts.text);
+  setTracking(ctx, 0);
   ctx.textBaseline = 'middle';
   const topY = padTop + 8 * s;
   const figText = `FIG. ${fig} · ${p.year}`.toUpperCase();
@@ -200,12 +187,15 @@ function drawPoster(ctx: CanvasRenderingContext2D, format: PosterFormat, p: Proj
 
   // check badges (bottom), wrapped into rows
   const chkSize = 12 * s;
-  setFont(ctx, 500, chkSize, fonts.mono);
+  setFont(ctx, 500, chkSize, fonts.text);
   setTracking(ctx, 0);
   const bh = 24 * s;
   const gap = 6 * s;
   const maxRow = W - padX * 2;
-  const badges = p.checks.map((text) => ({ text, w: 8 * s + 6 * s + 7 * s + ctx.measureText(text).width + 9 * s }));
+  const badges = p.checks.map((check) => {
+    const text = check.toUpperCase();
+    return { text, w: 8 * s + 6 * s + 7 * s + ctx.measureText(text).width + 8 * s };
+  });
   const rows: (typeof badges)[] = [[]];
   let rowW = 0;
   for (const b of badges) {
@@ -227,8 +217,7 @@ function drawPoster(ctx: CanvasRenderingContext2D, format: PosterFormat, p: Proj
     let x = padX;
     for (const b of row) {
       ctx.fillStyle = C.chkBg;
-      roundRect(ctx, x, y, b.w, bh, 4 * s);
-      ctx.fill();
+      ctx.fillRect(x, y, b.w, bh);
       ctx.fillStyle = C.dot;
       ctx.beginPath();
       ctx.arc(x + 8 * s + 3 * s, y + bh / 2, 3 * s, 0, Math.PI * 2);
@@ -250,28 +239,33 @@ function drawPoster(ctx: CanvasRenderingContext2D, format: PosterFormat, p: Proj
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // the name: Archivo expanded 800, as large as it fits, bottom-aligned above the rule
+  // the name: display recipe, as large as it fits, bottom-aligned above the rule
   const nameBottom = dashY - 12 * s;
   const nameTop = padTop + 16 * s + 16 * s;
   const maxSize = (format === 'portrait' ? 0.24 : 0.17) * W;
-  const fit = fitName(ctx, p.name, fonts, W - padX * 2, maxSize, nameBottom - nameTop);
-  setFont(ctx, 800, fit.size, fonts.disp, 'expanded');
-  setTracking(ctx, -0.02 * fit.size);
+  const fit = fitName(ctx, p.name.toUpperCase(), fonts, W - padX * 2, maxSize, nameBottom - nameTop);
+  setFont(ctx, 500, fit.size, fonts.disp);
+  setTracking(ctx, TRACK * fit.size);
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = C.ink;
-  const lh = 0.95 * fit.size;
-  const lastBaseline = nameBottom - lh + 0.81 * fit.size; // baseline inside a 0.95em line box
+  const lh = LINE * fit.size;
+  const lastBaseline = nameBottom - lh + BASELINE * fit.size; // baseline inside a .906em line box
   fit.lines.forEach((line, i) => {
     ctx.fillText(line, padX, lastBaseline - (fit.lines.length - 1 - i) * lh);
   });
 
-  // hairline frame (corners follow the WebGL mask radius)
+  // hairline frame, square, with a small cream square on each corner (Atlas panels)
   const bw = Math.max(1, s);
   ctx.strokeStyle = C.line;
   ctx.lineWidth = bw;
-  roundRect(ctx, bw / 2, bw / 2, W - bw, H - bw, POSTER_RADIUS * W);
-  ctx.stroke();
+  ctx.strokeRect(bw / 2, bw / 2, W - bw, H - bw);
+  const mark = Math.round(4 * s);
+  ctx.fillStyle = C.ink;
+  ctx.fillRect(0, 0, mark, mark);
+  ctx.fillRect(W - mark, 0, mark, mark);
+  ctx.fillRect(0, H - mark, mark, mark);
+  ctx.fillRect(W - mark, H - mark, mark, mark);
 
   ctx.restore();
 }

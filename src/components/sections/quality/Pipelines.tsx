@@ -19,14 +19,14 @@ export default function Pipelines() {
   return (
     <ul className="plain q-cards stg" ref={ref}>
       {CARDS.map((c, i) => (
-        <li key={c.name} className="panel q-card stg-i" style={{ '--d': `${DELAYS[i]}ms` } as React.CSSProperties}>
-          <span className="disp-s" style={{ fontSize: 20 }}>{c.name}</span>
+        <li key={c.name} className="q-card stg-i" style={{ '--d': `${DELAYS[i]}ms` } as React.CSSProperties}>
+          <span className="disp-s q-card-n">{c.name}</span>
           <span className="row-list">
             {c.chips.map((x) => (
               <span key={x} className="chip">{x}</span>
             ))}
           </span>
-          <span className="t-small" style={{ fontSize: 14 }}>{c.text}</span>
+          <span className="t-small q-card-x">{c.text}</span>
         </li>
       ))}
     </ul>

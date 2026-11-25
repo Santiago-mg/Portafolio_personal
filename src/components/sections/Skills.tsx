@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import RevealText from '@/components/fx/RevealText';
+import SectionHead from '@/components/sections/SectionHead';
 
 const PROJECTS: [string, string][] = [
   ['cp', 'CelularPro'], ['oc', 'OpenCart QA'], ['lf', 'LandingForge'], ['ep', 'EstadiaPro'],
@@ -35,17 +35,19 @@ export default function Skills() {
   return (
     <section className="sec" id="skills" aria-labelledby="sk-h">
       <div className="wrap">
-        <div className="g12 sec-head">
-          <p className="label s12">Evidence matrix</p>
-          <RevealText as="h2" id="sk-h" className="disp-s t-h2 s7 t12">Skills, with receipts</RevealText>
-          <p className="t-small s5 t12">No percentage bars. Pick a technology and the projects that prove it light up.</p>
-        </div>
+        <SectionHead
+          id="sk-h"
+          step={3}
+          label="Evidence matrix"
+          title={['Skills,', 'with receipts']}
+          intro="No percentage bars. Pick a technology and the projects that prove it light up."
+        />
         <div className="skills">
           <div>
             {GROUPS.map(([gName, techs]) => (
               <div className="sk-group" key={gName}>
-                <p className="label" style={{ paddingTop: 10 }}>{gName}</p>
-                <ul className="row-list" style={{ gap: 8 }}>
+                <p className="label sk-gl">{gName}</p>
+                <ul className="row-list sk-list">
                   {techs.map((t) => (
                     <li key={t[0]}>
                       <button type="button" className="sk-btn" aria-pressed={t[0] === name} onClick={() => setSelName(t[0])}>{t[0]}</button>
@@ -57,8 +59,8 @@ export default function Skills() {
           </div>
           <aside className="sk-panel" aria-live="polite" aria-label="Projects that demonstrate the selected skill">
             <p className="label">Demonstrated in</p>
-            <p className="disp-s" style={{ fontSize: 28, marginTop: 10 }}>{name}</p>
-            <p className="meta" style={{ marginTop: 4 }}>{ids.length} of 13 projects</p>
+            <p className="disp-s sk-name">{name}</p>
+            <p className="meta sk-count">{ids.length} of 13 projects</p>
             {note ? <p className="meta sk-note">{note}</p> : null}
             <ul className="sk-proj">
               {PROJECTS.map(([id, label]) => {

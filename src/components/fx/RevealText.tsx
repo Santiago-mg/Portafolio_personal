@@ -79,11 +79,17 @@ function measureLines(inner: HTMLElement, layer: HTMLElement): Line[] {
   range.detach?.();
   rows.sort((a, b) => a.t - b.t);
   const centers = rows.map((q) => (q.t + q.b) / 2);
+  // A single line has no neighbour to measure the pitch from: use the line height, so a bar
+  // over tight uppercase display type (line-height .906) covers the line, not the font's
+  // whole ascender-to-descender box.
+  const lh = parseFloat(getComputedStyle(inner).lineHeight);
+  const solo = Number.isFinite(lh) && lh > 0 ? lh : Infinity;
   return rows.map((q, i) => {
     // Bars follow the line pitch so tight display leading never makes them overlap.
     const pitch = Math.min(
       i > 0 ? centers[i] - centers[i - 1] : Infinity,
       i < rows.length - 1 ? centers[i + 1] - centers[i] : Infinity,
+      rows.length === 1 ? solo : Infinity,
     );
     const h = Number.isFinite(pitch) ? Math.min(q.b - q.t, pitch - Math.max(2, pitch * 0.05)) : q.b - q.t;
     const padX = Math.max(2, h * 0.04);

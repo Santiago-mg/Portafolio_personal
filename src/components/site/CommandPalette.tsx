@@ -119,9 +119,10 @@ export default function CommandPalette({ onClose }: { onClose: (restoreFocus?: b
         navigator.clipboard.writeText(SITE.email).then(() => flash('Copied ✓'), () => flash('Copy failed'));
       },
     } as Cmd] : []),
-    { id: 'th-light', group: 'Actions', label: 'Theme: light', icon: '◐', hint: theme === 'light' ? 'current' : '', keep: true, run: () => setTheme('light') },
-    { id: 'th-dark', group: 'Actions', label: 'Theme: dark', icon: '◐', hint: theme === 'dark' ? 'current' : '', keep: true, run: () => setTheme('dark') },
-    { id: 'th-contrast', group: 'Actions', label: 'Theme: high contrast', icon: '◐', hint: theme === 'contrast' ? 'current' : '', keep: true, run: () => setTheme('contrast') },
+    {
+      id: 'th-contrast', group: 'Actions', label: 'Theme: high contrast', icon: '◐', hint: theme === 'contrast' ? 'on' : 'off', keep: true,
+      run: () => setTheme(theme === 'contrast' ? 'dark' : 'contrast'),
+    },
     { id: 'lang', group: 'Actions', label: lang === 'es' ? 'Language: English' : 'Idioma: español', icon: 'Aa', keep: true, run: () => setLang(lang === 'es' ? 'en' : 'es') },
     ...(SITE.github ? [{
       id: 'github', group: 'Actions', label: 'Open GitHub', icon: '↗', hint: SITE.github.split('/').filter(Boolean).pop(),

@@ -117,8 +117,10 @@ function build(variant: DrawStrokeProps['variant'], b: Box, seed: number): Geo {
   }
 
   // underline: one confident marker swoosh just below the baseline, lifting at the end.
+  // Close to the baseline: display type is uppercase (no descenders) and set at .906, so a
+  // lower swoosh would touch the caps of the next line.
   const a = clamp(b.fs * 0.05, 1.5, 6);
-  const y = b.base + b.fs * 0.13;
+  const y = b.base + b.fs * 0.1;
   const x0 = b.x - b.w * 0.02 + j(b.w * 0.01);
   const x1 = b.x + b.w * 1.02 + j(b.w * 0.01);
   const L = x1 - x0;

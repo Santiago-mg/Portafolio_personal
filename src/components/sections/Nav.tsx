@@ -75,17 +75,15 @@ export default function Nav() {
               <button type="button" aria-pressed={!es} onClick={() => setLang('en')} lang="en">EN</button>
               <button type="button" aria-pressed={es} onClick={() => setLang('es')} lang="es">ES</button>
             </div>
-            <div className="seg hide-m" role="group" aria-label={es ? 'Tema' : 'Theme'}>
-              <button type="button" aria-label={es ? 'Tema claro' : 'Light theme'} aria-pressed={theme === 'light'} onClick={() => setTheme('light')}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><circle cx="8" cy="8" r="2.75" /><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.06 1.06M11.54 11.54l1.06 1.06M3.4 12.6l1.06-1.06M11.54 4.46l1.06-1.06" /></svg>
-              </button>
-              <button type="button" aria-label={es ? 'Tema oscuro' : 'Dark theme'} aria-pressed={theme === 'dark'} onClick={() => setTheme('dark')}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" aria-hidden="true"><path d="M13.2 9.6A5.5 5.5 0 0 1 6.4 2.8a5.5 5.5 0 1 0 6.8 6.8z" /></svg>
-              </button>
-              <button type="button" aria-label={es ? 'Tema de alto contraste' : 'High-contrast theme'} aria-pressed={theme === 'contrast'} onClick={() => setTheme('contrast')}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8" cy="8" r="5.75" /><path d="M8 2.25A5.75 5.75 0 0 1 8 13.75Z" fill="currentColor" stroke="none" /></svg>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="hc-tog hide-m"
+              aria-pressed={theme === 'contrast'}
+              onClick={() => setTheme(theme === 'contrast' ? 'dark' : 'contrast')}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="8" cy="8" r="5.75" /><path d="M8 2.25A5.75 5.75 0 0 1 8 13.75Z" fill="currentColor" stroke="none" /></svg>
+              <span className="hc-tog-t">{es ? 'Alto contraste' : 'High contrast'}</span>
+            </button>
             <button
               type="button"
               className="b b-2 hide-m nav-k"

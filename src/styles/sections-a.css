@@ -1,82 +1,243 @@
-/* Owned by the sections-a agent: Nav, Command palette, Mobile menu, Evidence, Work, Project poster. */
+/* Owned by the sections-a agent: Nav, Command palette, Mobile menu, section heads, wash links,
+   Evidence, Work, Project poster. Atlas: flat, square, hairlines, cream on charcoal; green = passed. */
 
-/* ---------- nav ---------- */
-.sg .nav-k{padding:0 12px; font-family:var(--f-mono); font-size:13px}
-@media (max-width:389px){ .sg .logo-name{display:none} }
-.sg [tabindex="-1"]:focus{outline:none}
-
-/* ---------- command palette (no open/close animation: keyboard tool) ---------- */
-.sg .cp-root{position:fixed; inset:0; z-index:100}
-.sg .cp-root .scrim{position:fixed; inset:0}
-.sg .cp-root .dialog{position:absolute; left:50%; top:min(112px, 12vh); width:min(640px, calc(100vw - 32px)); transform:translateX(-50%); overflow:hidden}
-.sg .cp-field{position:relative}
-.sg .cp-ico{position:absolute; left:18px; top:19px; color:var(--muted); pointer-events:none}
-.sg .cp-esc{position:absolute; right:16px; top:17px; pointer-events:none}
-.sg .cp-root .cmd-in{padding-right:64px}
-.sg .cp-root .cmd-in:focus-visible{outline:none; box-shadow:inset 0 -2px 0 var(--focus)}
-.sg .cp-list{max-height:min(470px, 58vh); overflow-y:auto; padding:8px; overscroll-behavior:contain}
-.sg .cp-group{padding:6px 0}
-.sg .cp-glabel{padding:8px 12px 6px}
-.sg .cp-oi{display:inline-flex; justify-content:center; width:20px; color:var(--muted)}
-.sg .cp-root .cmd-item{font-family:var(--f-text)}
-.sg .cp-empty{padding:28px 12px; text-align:center}
-.sg .cp-foot{display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:48px; padding:10px 16px; border-top:var(--bw) solid var(--rule); background:var(--paper)}
-.sg .cp-keys{display:flex; align-items:center; gap:16px}
-.sg .cp-keys > span{display:inline-flex; align-items:center; gap:4px}
-.sg .cp-toast{height:28px; font-size:12px; margin-left:auto}
-@media (max-width:520px){ .sg .cp-keys{display:none} }
-
-/* ---------- mobile menu ---------- */
-.sg .mm-root{position:fixed; inset:0; z-index:100; display:flex; flex-direction:column; height:100dvh; overflow-y:auto; overscroll-behavior:contain; background:var(--paper); color:var(--ink)}
-.sg .mm-head{display:flex; align-items:center; justify-content:space-between; flex:none; height:64px; padding:0 24px; border-bottom:var(--bw) solid var(--rule)}
-.sg .mm-nav{flex:1; padding:28px 24px 0}
-.sg .mm-links{display:flex; flex-direction:column; margin:0}
-.sg .mm-links li{border-bottom:var(--bw) solid var(--rule); animation:sg-up 300ms var(--ease-out) both}
-.sg .mm-links li:last-child{border-bottom:0}
-.sg .mm-links a{display:flex; align-items:baseline; gap:14px; min-height:44px; padding:14px 0; color:var(--ink); text-decoration:none}
-.sg .mm-link-t{font-size:34px}
-.sg .mm-ctl{display:flex; flex-direction:column; gap:14px; margin-top:28px}
-.sg .mm-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
-.sg .mm-cta{display:flex; flex-direction:column; gap:14px; padding:24px 24px 16px}
-.sg .mm-hire{width:100%; min-height:52px; font-size:16px}
-.sg .mm-avail{margin-top:0; font-size:14px}
-.sg .mm-status{padding:12px 24px 18px}
-.sg .mm-status p{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-2)}
-.sg .mm-status .dot{width:7px; height:7px; box-shadow:none}
-
-/* ---------- evidence ---------- */
-.sg .evi-meta{color:var(--ink-2)}
-.sg .evi-num{font-variant-numeric:tabular-nums}
-
-/* ---------- work ---------- */
-.sg .more-wrap{display:flex; flex-direction:column}
-.sg .more-tag{min-height:0}
-.sg .card-static{cursor:default}
-.sg .card.card-static:hover{border-color:var(--rule); box-shadow:none}
-.sg .card.card-static:hover .shot{transform:none}
-.sg .card.card-static:hover .go{transform:none}
-
-/* ---------- project poster ("technical drawing") ---------- */
-.sg .pp{
-  --pp-bg:var(--paper); --pp-grid:color-mix(in srgb, var(--rule) 70%, transparent); --pp-line:var(--rule);
-  --pp-ink:var(--ink); --pp-mute:var(--muted); --pp-glow:transparent;
-  container-type:inline-size; position:relative; display:flex; flex-direction:column; justify-content:space-between; gap:12px;
-  width:100%; height:100%; padding:16px 18px 18px; overflow:hidden; border:var(--bw) solid var(--pp-line); border-radius:8px; color:var(--pp-ink);
-  background-color:var(--pp-bg);
-  background-image:radial-gradient(120% 90% at 100% 0%, var(--pp-glow), transparent 58%), linear-gradient(var(--pp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--pp-grid) 1px, transparent 1px);
-  background-size:auto, 24px 24px, 24px 24px; background-position:0 0, -1px -1px, -1px -1px;
+/* =====================================================================
+   Nav — identity left, tools right (one 32px row), outlined tabs below
+   ===================================================================== */
+.sg .nav .logo { min-height: 32px; gap: 10px; }
+.sg .nav .logo-mark, .sg .mm-head .logo-mark { width: 32px; height: 32px; font-size: 12px; letter-spacing: var(--track); }
+.sg .nav-tools { gap: 8px; align-items: center; }
+.sg .nav-tools .b { min-height: 32px; height: 32px; padding: 0 12px; }
+.sg .nav-tools .b-icon { width: 32px; padding: 0; }
+.sg .nav-k { padding: 0 10px; font-family: var(--f-text); letter-spacing: 0; text-transform: none; }
+/* Controls in the nav are opaque labels: content scrolling under the fade never shows through them. */
+.sg .nav-links a { transition: none; }
+.sg .nav-links a:not(.on), .sg .nav .seg, .sg .nav .hc-tog:not([aria-pressed="true"]), .sg .nav-tools .b-2:not(:hover) { background-color: var(--paper); }
+@media (max-width: 1100px) {
+  .sg .nav-in { align-items: center; padding-top: 20px; padding-bottom: 20px; }
 }
-.sg .pp-dark{--pp-bg:#0D0F0E; --pp-grid:#262A27; --pp-line:#262A27; --pp-ink:#ECEDE7; --pp-mute:#8D938E; --pp-glow:rgba(60,203,127,.12)}
-.sg[data-theme="contrast"] .pp-light{--pp-grid:color-mix(in srgb, var(--rule) 16%, transparent)}
-.sg[data-theme="contrast"] .pp-dark{--pp-line:#8D938E}
-.sg .pp .label{color:var(--pp-mute)}
-.sg .pp-top{position:relative; z-index:1; display:flex; justify-content:space-between; gap:16px}
-.sg .pp-fig{flex:none; white-space:nowrap; color:var(--pp-ink)}
-.sg .pp-kind{min-width:0; overflow:hidden; text-align:right; text-overflow:ellipsis; white-space:nowrap}
-.sg .pp-name{position:relative; z-index:1; margin-top:auto; font-size:clamp(26px, calc(118cqw / var(--n, 10)), 92px); color:var(--pp-ink); white-space:nowrap}
-.sg .pp-num{position:absolute; right:14px; bottom:-.14em; z-index:0; font-size:clamp(120px, 42cqw, 300px); font-weight:700; line-height:.8; letter-spacing:-.04em; color:transparent; -webkit-text-stroke:1px var(--pp-line); user-select:none; pointer-events:none}
-.sg[data-theme="contrast"] .pp-light .pp-num{opacity:.28}
-.sg .pp-checks{position:relative; z-index:1; padding-top:12px; border-top:1px dashed var(--pp-line)}
-.sg .pp-dark .chk{background:#12261A; color:#5BD995}
-.sg .pp-dark .chk::before{background:#3CCB7F}
-.sg[data-theme="contrast"] .pp-dark .chk{border-color:#3CCB7F}
+@media (max-width: 767px) {
+  .sg .nav-in { column-gap: 12px; padding-top: 16px; padding-bottom: 16px; }
+  .sg .nav .logo-name { font-size: 13px; }
+}
+@media (max-width: 389px) { .sg .logo-name { display: none; } }
+.sg [tabindex="-1"]:focus { outline: none; }
+
+/* Segmented control (EN / ES): one cream outline, the chosen half filled */
+.sg .seg { border: 1px solid var(--ink); }
+.sg .seg button, .sg .seg a { height: 30px; min-width: 34px; padding: 0 8px; color: var(--ink); font-weight: 500; letter-spacing: 0; transition: transform 140ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .sg .seg button:not([aria-pressed="true"]):hover { background: var(--wash); color: var(--ink); }
+  .sg .nav-links a:not(.on):hover { background: linear-gradient(var(--wash), var(--wash)) var(--paper); }
+}
+
+/* High-contrast toggle (Nav + Mobile menu): outlined tab, cream-filled while on */
+.sg .hc-tog {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 32px; min-width: 32px; padding: 0 10px; border: 1px solid var(--ink); background: transparent; color: var(--ink);
+  font-family: var(--f-text); font-size: 12px; font-weight: 500; line-height: 1; letter-spacing: var(--track); text-transform: uppercase;
+  white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 140ms var(--ease-out);
+}
+.sg .hc-tog:active { transform: scale(.97); }
+.sg .hc-tog svg { flex: none; }
+.sg .hc-tog[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+@media (hover: hover) and (pointer: fine) { .sg .hc-tog:not([aria-pressed="true"]):hover { background: linear-gradient(var(--wash), var(--wash)) var(--paper); } }
+/* Between 768 and 1100 the nav keeps only the icon; the name stays for assistive tech. */
+@media (max-width: 1100px) {
+  .sg .nav .hc-tog { width: 32px; padding: 0; }
+  .sg .nav .hc-tog-t { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
+/* =====================================================================
+   Command palette (no open/close animation: keyboard tool)
+   ===================================================================== */
+.sg .cp-root { position: fixed; inset: 0; z-index: 100; }
+.sg .cp-root .scrim { position: fixed; inset: 0; }
+.sg .cp-root .dialog { position: absolute; left: 50%; top: min(112px, 12vh); width: min(640px, calc(100vw - 32px)); transform: translateX(-50%); overflow: hidden; border: 1px solid var(--rule-2); }
+.sg .cp-field { position: relative; }
+.sg .cp-ico { position: absolute; left: 18px; top: 19px; color: var(--muted); pointer-events: none; }
+.sg .cp-esc { position: absolute; right: 16px; top: 17px; pointer-events: none; }
+.sg .cp-root .cmd-in { padding-right: 64px; font-size: 16px; border-bottom: 1px solid var(--rule-2); }
+.sg .cp-root .cmd-in:focus-visible { outline: none; box-shadow: inset 0 -1px 0 var(--focus); }
+.sg .cp-list { max-height: min(470px, 58vh); overflow-y: auto; padding: 8px; overscroll-behavior: contain; }
+.sg .cp-group { padding: 6px 0; }
+.sg .cp-glabel { padding: 8px 12px 6px; }
+.sg .cp-oi { display: inline-flex; justify-content: center; width: 20px; color: var(--muted); }
+.sg .cp-root .cmd-item { min-height: 40px; font-family: var(--f-text); font-size: 15px; }
+.sg .cp-root .cmd-item[aria-selected="true"] { background: var(--wash); box-shadow: inset 2px 0 0 var(--ink); }
+.sg .cp-root .cmd-item .hint { font-family: var(--f-text); font-size: 12px; font-weight: 500; text-transform: uppercase; }
+.sg .cp-empty { padding: 28px 12px; text-align: center; }
+.sg .cp-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; padding: 10px 16px; border-top: 1px solid var(--rule); background: var(--paper); }
+.sg .cp-keys { display: flex; align-items: center; gap: 16px; font-size: 12px; }
+.sg .cp-keys > span { display: inline-flex; align-items: center; gap: 4px; }
+.sg .cp-root .kbd { border-width: 1px; border-color: var(--rule-2); background: transparent; }
+.sg .cp-toast { height: 28px; margin-left: auto; padding: 0 10px; font-family: var(--f-text); font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; }
+@media (max-width: 520px) { .sg .cp-keys { display: none; } }
+
+/* =====================================================================
+   Mobile menu — same identity row as the nav, so nothing jumps on open
+   ===================================================================== */
+.sg .mm-root { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; height: 100dvh; overflow-y: auto; overscroll-behavior: contain; background: var(--paper); color: var(--ink); }
+.sg .mm-head { display: flex; align-items: center; justify-content: space-between; flex: none; height: 72px; padding: 0 32px; border-bottom: 1px solid var(--rule); }
+.sg .mm-head .logo { min-height: 32px; }
+.sg .mm-head .b-icon { width: 32px; min-height: 32px; height: 32px; padding: 0; }
+.sg .mm-nav { flex: 1; padding: 24px 32px 0; }
+.sg .mm-links { display: flex; flex-direction: column; margin: 0; }
+.sg .mm-links li { border-bottom: 1px solid var(--rule); animation: sg-up 360ms var(--ease-out) both; }
+.sg .mm-links li:last-child { border-bottom: 0; }
+.sg .mm-links a { display: flex; align-items: baseline; gap: 16px; min-height: 44px; padding: 14px 0; color: var(--ink); text-decoration: none; }
+.sg .mm-links .meta { flex: none; width: 20px; font-size: 12px; line-height: 1; font-weight: 500; font-variant-numeric: tabular-nums; }
+.sg .mm-link-t { font-size: clamp(32px, 9vw, 44px); }
+.sg .mm-ctl { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.sg .mm-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; }
+.sg .mm-cta { display: flex; flex-direction: column; gap: 14px; padding: 24px 32px 16px; }
+.sg .mm-hire { width: 100%; min-height: 48px; font-size: 13px; }
+.sg .mm-avail { margin-top: 0; font-size: 14px; line-height: 20px; }
+.sg .mm-status { padding: 12px 32px 18px; }
+.sg .mm-status p { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: var(--ink-2); }
+.sg .mm-status .dot { width: 7px; height: 7px; box-shadow: none; }
+@media (max-width: 767px) {
+  .sg .mm-head { height: 64px; padding: 0 20px; }
+  .sg .mm-nav { padding: 20px 20px 0; }
+  .sg .mm-cta { padding: 24px 20px 16px; }
+  .sg .mm-status { padding: 12px 20px 18px; }
+}
+
+/* =====================================================================
+   Section heads (SectionHead.tsx) — number + process dots, offset display
+   title, short intro in a narrow measure on the grid
+   ===================================================================== */
+.sg .sh { row-gap: 28px; align-items: end; }
+.sg .sh-meta { grid-column: 1 / -1; display: block; color: var(--ink); }
+.sg .sh-n { margin-right: 4px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sg .sh-dots { display: inline-flex; align-items: center; gap: 5px; margin-right: 6px; vertical-align: 1px; }
+.sg .sh-dots i { display: block; width: 7px; height: 7px; border: 1px solid var(--muted); border-radius: 50% !important; }
+.sg .sh-dots i.is-done { background: var(--ink); border-color: var(--ink); }
+.sg .sh-dots i.is-cur { background: var(--pass); border-color: var(--pass); }
+.sg .sh-h { grid-column: 1 / span 8; }
+/* Split titles: two phrases, the second set in by one column (a part placed on the table). */
+.sg .sh-split > .fx-rv-in { display: block; }
+.sg .sh-a, .sg .sh-b { display: block; }
+.sg .sh-b { padding-left: 12.5%; }
+.sg .sh-intro { grid-column: 9 / -1; max-width: 32ch; }
+@media (max-width: 1023px) {
+  .sg .sh-h { grid-column: 1 / -1; }
+  .sg .sh-intro { grid-column: 7 / -1; }
+}
+@media (max-width: 767px) {
+  .sg .sh { row-gap: 20px; }
+  .sg .sh-meta, .sg .sh-h, .sg .sh-intro { grid-column: 1 / -1; }
+  .sg .sh-b { padding-left: 14%; }
+}
+
+/* =====================================================================
+   Wash links — compact reading links (24–28px) with a northeast arrow
+   ===================================================================== */
+.sg .wl {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 8px;
+  background: var(--wash); color: var(--ink); font-family: var(--f-text); font-size: 12px; font-weight: 500; line-height: 1;
+  letter-spacing: var(--track); text-transform: uppercase; text-decoration: none; white-space: nowrap;
+  transition: opacity 200ms ease-in-out;
+}
+.sg .wl .ne { display: inline-block; transition: transform 200ms ease-in-out; }
+@media (hover: hover) and (pointer: fine) {
+  .sg .wl:hover { opacity: .72; }
+  .sg .wl:hover .ne { transform: translate(2px, -2px); }
+}
+
+/* =====================================================================
+   Evidence — big numbers between paired hairlines, footnotes as captions
+   ===================================================================== */
+.sg .evi { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); box-shadow: inset 0 9px 0 -8px var(--rule), inset 0 -9px 0 -8px var(--rule); }
+.sg .evi-cell { gap: 14px; padding: 48px 24px 36px; border-left: 1px solid var(--rule); }
+.sg .evi-cell:first-child { border-left: 0; padding-left: 0; }
+.sg .evi-n { display: flex; align-items: flex-start; font-size: clamp(40px, 4.45vw, 64px); line-height: .906; color: var(--ink); }
+.sg .evi-n svg { flex: none; }
+.sg .evi-n sup { font-size: 12px; line-height: 1; font-weight: 500; letter-spacing: 0; vertical-align: top; margin-left: 6px; color: var(--muted); }
+.sg .evi-num { font-variant-numeric: tabular-nums; }
+.sg .evi-meta { max-width: 24ch; font-size: 12px; line-height: 14px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; color: var(--ink-2); }
+.sg .foot { gap: 8px 24px; padding: 20px 0 0; font-size: 12px; line-height: 16px; color: var(--muted); }
+.sg .foot b { font-family: var(--f-text); font-weight: 500; color: var(--ink-2); margin-right: 6px; }
+/* Five columns: each footnote starts where its number's text starts. */
+@media (min-width: 1024px) {
+  .sg .foot { column-gap: 0; }
+  .sg .foot li { padding-right: 24px; }
+  .sg .foot li + li { padding-left: 24px; }
+}
+@media (max-width: 1023px) {
+  .sg .evi-cell { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); }
+  .sg .evi-cell:nth-child(-n+3) { border-top: 0; }
+}
+@media (max-width: 767px) {
+  .sg .evi-cell { padding: 28px 0 24px; }
+  .sg .evi-cell:nth-child(3) { border-top: 1px solid var(--rule); }
+}
+/* Whatever scene follows the bar directly doesn't repeat its paired hairlines. */
+.sg .evi + .sec { border-top: 0; box-shadow: none; }
+
+/* =====================================================================
+   Work — flat cards: hairline outline, poster inset like a drawing on a sheet
+   ===================================================================== */
+.sg .card { padding: 12px; border: 1px solid var(--rule-2); background: transparent; box-shadow: none; transition: none; }
+/* "Passed" outline: a green hairline that fades in over the card's own (opacity only). */
+.sg .card::before { content: ""; position: absolute; inset: -1px; z-index: 3; border: 1px solid var(--pass); opacity: 0; pointer-events: none; transition: opacity 200ms ease-in-out; }
+.sg .card .shot { transition: transform 240ms var(--ease-out); }
+.sg .card-body { gap: 14px; padding: 20px 8px 4px; }
+.sg .card-val { max-width: 52ch; font-size: 16px; line-height: 23px; color: var(--ink-2); }
+.sg .card-foot { gap: 6px 8px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.sg .card-foot .tag { min-height: 28px; }
+.sg .card-foot .tag-muted svg { flex: none; }
+@media (hover: hover) and (pointer: fine) {
+  .sg .card:hover { border-color: var(--rule-2); box-shadow: none; }
+  .sg .card:not(.card-static):hover::before { opacity: 1; }
+  .sg .card:not(.card-static):hover .shot { transform: translateY(-4px); }
+}
+.sg .card:has(.card-link:focus-visible) { outline: 1px solid var(--focus); outline-offset: 3px; }
+.sg[data-theme="contrast"] .card:has(.card-link:focus-visible) { outline: 3px solid #000000; }
+.sg .card-static { cursor: default; }
+.sg .card.card-static:hover .shot { transform: none; }
+@media (max-width: 767px) { .sg .card-body { padding: 16px 4px 2px; } }
+
+/* more projects */
+.sg .more-wrap { display: flex; flex-direction: column; }
+.sg .more-wrap .ink-top { border-top: 1px solid var(--ink); padding-top: 12px; }
+.sg .more-list li { border-bottom: 1px solid var(--rule); }
+.sg .more-row { gap: 4px 16px; padding: 14px 0; }
+.sg .more-n { font-size: 16px; line-height: 20px; font-weight: 500; color: var(--ink); }
+.sg .more-tag { min-height: 0; }
+.sg .more-d { font-size: 14px; line-height: 20px; color: var(--ink-2); }
+
+/* =====================================================================
+   Project poster — a charcoal technical drawing: cream hairlines, faint
+   blueprint grid, corner marks, display name, green check badges
+   ===================================================================== */
+.sg .pp {
+  --pp-bg: var(--paper); --pp-grid: color-mix(in srgb, var(--ink) 6%, transparent); --pp-line: color-mix(in srgb, var(--ink) 15%, transparent);
+  --pp-ink: var(--ink); --pp-mute: var(--muted);
+  container-type: inline-size; position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+  width: 100%; height: 100%; padding: 16px 18px 18px; overflow: hidden; border: 1px solid var(--pp-line); color: var(--pp-ink);
+  background-color: var(--pp-bg);
+  background-image:
+    linear-gradient(var(--pp-ink), var(--pp-ink)), linear-gradient(var(--pp-ink), var(--pp-ink)),
+    linear-gradient(var(--pp-ink), var(--pp-ink)), linear-gradient(var(--pp-ink), var(--pp-ink)),
+    linear-gradient(var(--pp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--pp-grid) 1px, transparent 1px);
+  background-size: 4px 4px, 4px 4px, 4px 4px, 4px 4px, 24px 24px, 24px 24px;
+  background-position: -1px -1px, calc(100% + 1px) -1px, -1px calc(100% + 1px), calc(100% + 1px) calc(100% + 1px), -1px -1px, -1px -1px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat;
+}
+.sg .pp-dark { --pp-bg: var(--sunken); }
+.sg[data-theme="contrast"] .pp { --pp-line: var(--ink); --pp-grid: color-mix(in srgb, var(--ink) 12%, transparent); }
+.sg .pp .label { color: var(--pp-mute); }
+.sg .pp-top { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 16px; }
+.sg .pp .pp-fig { flex: none; white-space: nowrap; color: var(--pp-ink); }
+.sg .pp-kind { min-width: 0; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+.sg .pp-name { position: relative; z-index: 1; margin-top: auto; font-size: clamp(26px, calc(128cqw / var(--n, 10)), 92px); color: var(--pp-ink); white-space: nowrap; }
+.sg .pp-num { position: absolute; right: 14px; bottom: -.14em; z-index: 0; font-size: clamp(120px, 42cqw, 300px); line-height: .8; color: transparent; -webkit-text-stroke: 1px var(--pp-line); user-select: none; pointer-events: none; }
+.sg[data-theme="contrast"] .pp-num { opacity: .28; }
+.sg .pp-checks { position: relative; z-index: 1; padding-top: 12px; border-top: 1px dashed var(--pp-line); }
+
+/* Reduced motion: no press-scale, arrow nudge or lift; the fades stay. */
+@media (prefers-reduced-motion: reduce) {
+  .sg .hc-tog, .sg .wl .ne, .sg .card .shot { transition: none; }
+  .sg .hc-tog:active, .sg .wl:hover .ne, .sg .card:hover .shot { transform: none !important; }
+}
