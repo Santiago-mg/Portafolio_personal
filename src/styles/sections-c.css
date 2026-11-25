@@ -1,1 +1,29 @@
 /* Owned by the sections-c agent. */
+
+/* Skills */
+.sg .sk-note{margin-top:12px}
+.sg .sk-btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+
+/* Changelog: stagger in once. Hidden state exists only after JS arms it (.is-armed). */
+.sg .tl.is-armed .tl-item{opacity:0; transform:translateY(8px)}
+.sg .tl.is-armed.is-in .tl-item{opacity:1; transform:none; transition:opacity 300ms var(--ease-out), transform 300ms var(--ease-out); transition-delay:calc(var(--i, 0) * 50ms)}
+
+/* About photo: 4:5 frame, clip-path reveal from the bottom */
+.sg .about-photo{position:relative; aspect-ratio:4 / 5; overflow:hidden; border:var(--bw) solid var(--rule); border-radius:12px; background:var(--raised)}
+.sg .about-photo.is-armed{clip-path:inset(100% 0 0 0)}
+.sg .about-photo.is-armed.is-in{clip-path:inset(0 0 0 0); transition:clip-path 600ms var(--ease-io)}
+
+/* Contact / footer links */
+.sg a.mail{text-decoration:none}
+.sg a.mail:focus-visible, .sg .mail:focus-visible{outline:2px solid var(--ink); outline-offset:4px; border-radius:4px}
+.sg .ct-link{display:inline-flex; align-items:center; min-height:44px; text-decoration:none}
+.sg .st-link{display:inline-flex; align-items:center; min-height:24px; font-size:12px; text-decoration:none}
+.sg .ct-link:focus-visible, .sg .st-link:focus-visible{outline:2px solid var(--ink); outline-offset:3px; border-radius:2px}
+@media (hover:hover) and (pointer:fine){
+  .sg .ct-link:hover .ul::after, .sg .st-link:hover .ul::after{transform:scaleX(1); transform-origin:left center}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sg .tl.is-armed .tl-item{opacity:1; transform:none}
+  .sg .about-photo.is-armed{clip-path:none}
+}
