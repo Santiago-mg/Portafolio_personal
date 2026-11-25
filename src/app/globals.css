@@ -10,6 +10,12 @@ body { margin: 0; }
 .sg .cp-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .sg .cp-cap { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .sg .hero .spec { margin-top: 40px; }
+
+/* While the preloader covers the page, the hero's narrative waits for it. */
+.sg[data-boot] .pl *, .sg[data-boot] .hero-h { animation-play-state: paused; }
+.sg .stroke-host { position: relative; display: inline-block; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 @media (max-width: 1023px) {
   .sg .hero-grid.with-photo .hero-main, .sg .hero-grid.with-photo .hero-photo { grid-column: 1 / -1; }
   .sg .hero-grid.with-photo .hero-photo { max-width: 520px; }

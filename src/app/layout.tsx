@@ -2,6 +2,10 @@ import type { Metadata } from 'next';
 import { Archivo, IBM_Plex_Mono, IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
 import './sg.css';
+import '../styles/sections-a.css';
+import '../styles/sections-b.css';
+import '../styles/sections-c.css';
+import '../styles/fx.css';
 
 const archivo = Archivo({ subsets: ['latin'], axes: ['wdth'], variable: '--font-archivo' });
 const plexSans = IBM_Plex_Sans({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-plex-sans' });
@@ -16,7 +20,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Without JS the preloader never runs: let the narrative animations play. */}
+        <noscript>
+          <style>{'.sg[data-boot] .pl *, .sg[data-boot] .hero-h{animation-play-state:running !important}'}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   );
 }
