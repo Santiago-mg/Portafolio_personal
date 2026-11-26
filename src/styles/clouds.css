@@ -1,0 +1,193 @@
+/* =====================================================================
+   Cloud passages between rooms (CloudPassage.tsx, ./components/fx/clouds).
+   The band is the `from` room on top and the `to` room underneath; the seam
+   between them hides behind the opaque core of the middle bank and rides with
+   it. Layers are positioned inline from the shared layout (choreo.ts); scroll
+   moves them with transform / opacity only.
+   ===================================================================== */
+
+.sg .clp {
+  --clp-h: max(640px, 100vh);
+  --clp-from: #181818;
+  --clp-to: #c4c3b6;
+  /* placeholder tones, until the painted textures arrive */
+  --clp-hi: #ece4d4;
+  --clp-mid: #d4cec0;
+  --clp-lo: #8e979a;
+  position: relative; z-index: 2;
+  height: var(--clp-h);
+  background: var(--clp-from);
+}
+@supports (height: 100svh) {
+  .sg .clp { --clp-h: max(640px, 100svh); }
+}
+@media (max-width: 767px) {
+  .sg .clp { --clp-h: max(540px, 80vh); }
+  .sg .clp[data-card-passage] { --clp-h: max(600px, 90vh); }
+  @supports (height: 100svh) {
+    .sg .clp { --clp-h: max(540px, 80svh); }
+    .sg .clp[data-card-passage] { --clp-h: max(600px, 90svh); }
+  }
+}
+
+.sg .clp[data-from="dark"] { --clp-from: #181818; }
+.sg .clp[data-from="putty"] { --clp-from: #c4c3b6; }
+.sg .clp[data-from="dusk"] { --clp-from: #243030; }
+.sg .clp[data-to="dark"] { --clp-to: #181818; }
+.sg .clp[data-to="putty"] { --clp-to: #c4c3b6; }
+.sg .clp[data-to="dusk"] { --clp-to: #243030; }
+.sg .clp[data-variant="descend"] { --clp-hi: #b09685; --clp-mid: #77786d; --clp-lo: #3d4e4a; }
+
+/* ---------- ground: the two rooms, cut hard (the clouds do the blending) ---------- */
+.sg .clp-ground { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.sg .clp-to { position: absolute; left: 0; right: 0; height: calc(var(--clp-h) + 50vh); background: var(--clp-to); }
+/* Into the dusk: the sky itself darkens upwards, behind the clouds. */
+.sg .clp[data-variant="descend"] .clp-ground { background: linear-gradient(var(--clp-from) 25%, var(--clp-to) 70%); }
+
+/* ---------- the sky: cloud layers, faded at the band's top and bottom edges ---------- */
+.sg .clp-sky {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 9%, #000 95%, transparent);
+  mask-image: linear-gradient(transparent, #000 9%, #000 95%, transparent);
+}
+.sg .clp-l { position: absolute; }
+.sg .clp[data-near] .clp-l { will-change: transform, opacity; }
+.sg .clp-d { position: absolute; inset: 0; }
+/* A few px of idle drift, only near the viewport (offscreen passages keep no layers) and
+   paused while the tab is hidden. Duration and phase come inline per layer. */
+.sg .clp[data-near] .clp-d { animation: clp-drift 24s ease-in-out infinite alternate both; animation-play-state: paused; }
+.sg .clp[data-live] .clp-d { animation-play-state: running; }
+@keyframes clp-drift {
+  from { transform: translate3d(calc(var(--clp-drift, 10px) * -1), 0, 0); }
+  to { transform: translate3d(var(--clp-drift, 10px), 0, 0); }
+}
+.sg .clp-tx, .sg .clp-ph { position: absolute; inset: 0; }
+.sg .clp-tx {
+  background-size: 100% 100%; background-repeat: no-repeat;
+  opacity: 0; transition: opacity 1100ms var(--ease-out);
+}
+.sg .clp[data-ready] .clp-tx { opacity: 1; }
+/* The placeholder leaves only after the painting is fully in (the seam never shows through),
+   then stops painting altogether, leaving each layer a single image. */
+.sg .clp-ph { transition: opacity 500ms ease 1000ms, visibility 0s linear 1500ms; }
+.sg .clp[data-ready] .clp-ph { opacity: 0; visibility: hidden; }
+
+/* Placeholder composition: soft masses in the same boxes, only until the paint is ready. */
+.sg .clp-haze .clp-ph {
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--clp-mid) 55%, transparent), transparent) 8% 42% / 44% 44% no-repeat,
+    radial-gradient(closest-side, color-mix(in srgb, var(--clp-hi) 50%, transparent), transparent) 52% 38% / 50% 48% no-repeat,
+    radial-gradient(closest-side, color-mix(in srgb, var(--clp-mid) 50%, transparent), transparent) 92% 46% / 42% 40% no-repeat;
+}
+.sg .clp-bank .clp-ph {
+  background:
+    radial-gradient(closest-side, var(--clp-hi) 30%, transparent) 6% 30% / 22% 44% no-repeat,
+    radial-gradient(closest-side, var(--clp-hi) 30%, transparent) 30% 24% / 20% 46% no-repeat,
+    radial-gradient(closest-side, var(--clp-hi) 30%, transparent) 55% 32% / 24% 42% no-repeat,
+    radial-gradient(closest-side, var(--clp-hi) 30%, transparent) 80% 26% / 20% 46% no-repeat,
+    radial-gradient(closest-side, var(--clp-hi) 30%, transparent) 99% 30% / 18% 42% no-repeat,
+    linear-gradient(transparent 34%, var(--clp-mid) 46%, var(--clp-mid) 64%, var(--clp-lo) 86%, transparent 97%);
+}
+.sg .clp-left .clp-ph {
+  background:
+    radial-gradient(closest-side, var(--clp-hi) 34%, transparent) 16% 18% / 42% 46% no-repeat,
+    radial-gradient(closest-side, var(--clp-hi) 34%, transparent) 46% 36% / 36% 44% no-repeat,
+    radial-gradient(closest-side, var(--clp-mid) 34%, transparent) 76% 60% / 30% 36% no-repeat,
+    radial-gradient(closest-side, var(--clp-mid) 40%, transparent) 30% 70% / 80% 42% no-repeat;
+}
+.sg .clp-right .clp-ph {
+  background:
+    radial-gradient(closest-side, var(--clp-hi) 34%, transparent) 84% 18% / 42% 46% no-repeat,
+    radial-gradient(closest-side, var(--clp-hi) 34%, transparent) 54% 36% / 36% 44% no-repeat,
+    radial-gradient(closest-side, var(--clp-mid) 34%, transparent) 24% 60% / 30% 36% no-repeat,
+    radial-gradient(closest-side, var(--clp-mid) 40%, transparent) 70% 70% / 80% 42% no-repeat;
+}
+
+/* ---------- descend: clouds dissolve into the dusk, which carries on into the closing scene ---------- */
+.sg .clp-veil {
+  position: absolute; left: 0; right: 0; top: 55%; bottom: -12vh; pointer-events: none;
+  background: linear-gradient(rgba(36, 48, 48, 0), rgba(36, 48, 48, .6) 50%, #243030 calc(100% - 12vh), rgba(36, 48, 48, .55) calc(100% - 6vh), rgba(36, 48, 48, 0));
+}
+.sg .clp[data-to="dusk"] + .ct { border-top-color: transparent; }
+
+/* ---------- the notched card ---------- */
+.sg .clp-card-a {
+  position: absolute; left: 50%; top: 50%; z-index: 3;
+  width: min(400px, calc(100% - 2 * var(--gutter)));
+  translate: -50% -50%;
+}
+.sg .clp[data-near] .clp-card-a { will-change: transform; }
+.sg .clp-card {
+  --n: 18px; /* corner cut */
+  position: relative; isolation: isolate;
+  display: flex; flex-direction: column; justify-content: space-between; gap: 24px;
+  aspect-ratio: 1; padding: 34px 32px 30px;
+  background: #181818; color: #fffde0;
+  clip-path: polygon(var(--n) 0, calc(100% - var(--n)) 0, 100% var(--n), 100% calc(100% - var(--n)), calc(100% - var(--n)) 100%, var(--n) 100%, 0 calc(100% - var(--n)), 0 var(--n));
+}
+/* 1px hairline 8px inside the cut shape: a cream plate, then the dark face 1px further in
+   (the diagonal cuts shrink by i·(2 − √2) so every edge stays exactly 1px). */
+.sg .clp-card::before, .sg .clp-card::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+.sg .clp-card::before {
+  --c: calc(var(--n) - 4.686px);
+  inset: 8px; background: rgba(255, 253, 224, .5);
+  clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+}
+.sg .clp-card::after {
+  --c: calc(var(--n) - 5.272px);
+  inset: 9px; background: #181818;
+  clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+}
+.sg .clp-stats { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; }
+.sg .clp-stat { display: flex; gap: .3em; font-family: var(--f-text); font-size: 16px; line-height: 20px; font-weight: 500; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.sg .clp-stat dt { text-transform: uppercase; color: #d6d4bd; }
+.sg .clp-stat dd { margin: 0; color: #fffde0; }
+.sg .clp-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.sg .clp-micro { margin: 0; font-family: var(--f-text); font-size: 10px; line-height: 12px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: #d6d4bd; }
+.sg .clp-act {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 32px; padding: 0 11px 0 12px;
+  border: 1px solid #fffde0; background: transparent; color: #fffde0;
+  font-family: var(--f-text); font-size: 12px; line-height: 1; font-weight: 500; letter-spacing: var(--track); text-transform: uppercase; text-decoration: none;
+  transition: background-color 200ms ease, color 200ms ease, transform 140ms var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.sg .clp-act .arrow-ne, .sg .clp-act .clp-arrow { flex: none; transition: transform 200ms var(--ease-out); }
+.sg .clp-act:active { transform: scale(.97); }
+.sg .clp-card .clp-act:focus-visible { outline: 1px solid #fffde0; outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .sg .clp-act:hover { background: #fffde0; color: #181818; }
+  .sg .clp-act:hover .arrow-ne { transform: translate(2px, -2px); }
+  .sg .clp-act:hover .clp-arrow { transform: translateY(2px); }
+}
+@media (max-width: 479px) {
+  .sg .clp-card { aspect-ratio: 5 / 4; padding: 28px 24px 24px; }
+}
+
+/* ---------- high contrast: no clouds, a plain divider band ---------- */
+.sg[data-theme="contrast"] .clp {
+  height: 48px; background: #ffffff;
+  border-top: 1px solid #000000; border-bottom: 1px solid #000000;
+  box-shadow: inset 0 8px 0 -7px #000000, inset 0 -8px 0 -7px #000000;
+}
+.sg[data-theme="contrast"] .clp[data-card-passage] { height: auto; padding: 72px var(--gutter); }
+.sg[data-theme="contrast"] .clp-ground, .sg[data-theme="contrast"] .clp-sky, .sg[data-theme="contrast"] .clp-veil { display: none; }
+.sg[data-theme="contrast"] .clp-card-a { position: relative; left: auto; top: auto; translate: none; transform: none; margin: 0 auto; }
+.sg[data-theme="contrast"] .clp-card { background: #000000; color: #ffffff; }
+.sg[data-theme="contrast"] .clp-card::before { background: #ffffff; }
+.sg[data-theme="contrast"] .clp-card::after { background: #000000; }
+.sg[data-theme="contrast"] .clp-stat dt, .sg[data-theme="contrast"] .clp-stat dd, .sg[data-theme="contrast"] .clp-micro { color: #ffffff; }
+.sg[data-theme="contrast"] .clp-act { border-color: #ffffff; color: #ffffff; }
+.sg[data-theme="contrast"] .clp-card .clp-act:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; box-shadow: none; }
+@media (hover: hover) and (pointer: fine) {
+  .sg[data-theme="contrast"] .clp-act:hover { background: #ffffff; color: #000000; }
+}
+.sg[data-theme="contrast"] .clp[data-to="dusk"] + .ct { border-top-color: #000000; }
+
+/* ---------- reduced motion: the resting composition, still ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .sg .clp-d, .sg .clp[data-near] .clp-d { animation: none; }
+  .sg .clp-tx { transition-duration: 240ms; }
+  .sg .clp-ph { transition: opacity 200ms ease 240ms, visibility 0s linear 440ms; }
+  .sg .clp-act, .sg .clp-act .arrow-ne, .sg .clp-act .clp-arrow { transition: none; }
+  .sg .clp-act:active { transform: none; }
+}
