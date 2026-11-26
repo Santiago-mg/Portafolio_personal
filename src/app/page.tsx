@@ -7,6 +7,8 @@ import Stage from '@/components/sections/Stage';
 import Hero from '@/components/sections/Hero';
 import Evidence from '@/components/sections/Evidence';
 import Process from '@/components/sections/Process';
+import CloudPassage from '@/components/fx/CloudPassage';
+import Pillars from '@/components/sections/Pillars';
 import Work from '@/components/sections/Work';
 import Interlude from '@/components/sections/Interlude';
 import Quality from '@/components/sections/Quality';
@@ -31,14 +33,33 @@ export default function Home() {
         <Hero />
         <Evidence />
         <Process />
-        <Work />
+        <CloudPassage
+          from="dark"
+          to="putty"
+          variant="part"
+          card={{
+            label: 'Scroll',
+            stats: [['Tests', '1,000+'], ['Defects fixed', '37']],
+            action: { text: 'See the work', href: '#work' },
+          }}
+        />
+        <div className="room room-putty">
+          <Work />
+        </div>
+        <CloudPassage from="putty" to="dark" variant="rise" />
         <Interlude />
         <Quality />
         <Ship />
-        <Skills />
-        <Changelog />
-        <About />
+        <CloudPassage from="dark" to="putty" variant="part" />
+        <div className="room room-putty">
+          <Pillars />
+          <Skills />
+          <Changelog />
+          <About />
+        </div>
+        <CloudPassage from="putty" to="dark" variant="rise" />
         <Reel />
+        <CloudPassage from="dark" to="dusk" variant="descend" />
         <Contact />
       </main>
       <StatusFooter />
