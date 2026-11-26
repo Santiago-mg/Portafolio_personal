@@ -8,6 +8,8 @@ Personal portfolio of **Santiago González**, full-stack developer (TypeScript �
 
 - **Opening presentation** — the SG mark rises, the screen floods green on *all checks passed*, then the mark bursts into rays that uncover the stage.
 - **Code portrait stage** — a full-screen, background-free portrait with a split headline. Move the cursor over the face and a brush trail reveals it rendered from real test and pipeline code, only inside the silhouette. Press and hold to compile it all; a toggle does the same for keyboard and screen-reader users; touch screens get an automatic sweep.
+- **Cloud passages** — painted clouds generated on canvas part, rise and descend as you scroll between charcoal rooms, putty gallery rooms and the closing dusk scene.
+- **Gallery rooms** — putty rooms with serif display titles, circular pillar vignettes, hexagon chapter indicators and a cropped serif wordmark in the footer.
 - **Exploded system study** — a sticky, scroll-linked isometric drawing of the stack that moves through BUILD → TEST → SHIP, highlighting one layer at a time.
 - Headings revealed by sweeping bars, hand-drawn strokes that draw themselves on scroll, and a monumental closing statement over a landscape drawn in SVG.
 - **WebGL galleries** — a dark interlude with scroll-linked marquee type and project posters floating in depth, plus an arc carousel of every project (drag, swipe, keyboard).
@@ -17,7 +19,7 @@ Personal portfolio of **Santiago González**, full-stack developer (TypeScript �
 
 ## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · CSS design tokens · Canvas 2D and WebGL2 · self-hosted Inter and IBM Plex Mono via `next/font`.
+Next.js 16 (App Router) · React 19 · TypeScript · CSS design tokens · Canvas 2D and WebGL2 · self-hosted Inter, Instrument Serif and IBM Plex Mono via `next/font`.
 
 ## Run locally
 
