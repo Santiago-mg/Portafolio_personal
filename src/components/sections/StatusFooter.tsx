@@ -137,6 +137,9 @@ export default function StatusFooter() {
           <p className="ft-c">© 2026</p>
         </div>
       </div>
+      <div className="ft-mark" aria-hidden="true">
+        <span>González</span>
+      </div>
     </footer>
   );
 }

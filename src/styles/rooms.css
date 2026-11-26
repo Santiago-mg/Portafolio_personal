@@ -1,0 +1,98 @@
+/* Gallery rooms: putty light rooms, serif display moments, hexagon indicators, vignettes.
+   Contrast on #c4c3b6: #000 11.8, #2b2a27 8.1, #4a4946 5.1, #0a4a27 5.9 (4.5+ on its own tint),
+   #17703c 3.5 (graphic marks, >= 3). Hairlines are decorative. */
+
+/* ---------- putty room: a token remap, hard-cut against the dark rooms ---------- */
+.sg .room { position: relative; }
+.sg:not([data-theme="contrast"]) .room-putty {
+  --paper: #c4c3b6; --raised: #e7e5e4; --sunken: #b6b5a8;
+  --ink: #000000; --ink-2: #2b2a27; --muted: #4a4946;
+  --rule: rgba(0, 0, 0, .14); --rule-2: rgba(0, 0, 0, .3);
+  --pass: #17703c; --pass-ink: #0a4a27; --pass-tint: rgba(23, 112, 60, .12);
+  --code-bg: #e7e5e4; --code-str: #6b3f12;
+  --focus: #000000; --wash: rgba(0, 0, 0, .06);
+  color-scheme: light;
+}
+.sg .room-putty { background: #c4c3b6; color: #000; }
+.sg[data-theme="contrast"] .room-putty { background: #fff; color: #000; }
+
+/* Projects stay charcoal plates on the putty wall, like framed works: dark tokens inside. */
+.sg:not([data-theme="contrast"]) .room-putty :is(.pp, .pl-disc) {
+  --paper: #181818; --sunken: #141414; --ink: #fffde0; --ink-2: #d6d4bd; --muted: #8f8e85;
+  --rule: #2f2f2c; --rule-2: #3d3d39;
+  --pass: #3ccb7f; --pass-ink: #5bd995; --pass-tint: rgba(60, 203, 127, .12);
+  --focus: #fffde0; --wash: rgba(192, 192, 192, .1);
+}
+.sg .room-putty .card::before { border-color: var(--pass); }
+.sg .room-putty .about-photo { background: var(--sunken); }
+
+/* ---------- hexagon indicators ---------- */
+.sg .hex { display: block; flex: none; overflow: visible; }
+.sg .hex polygon { fill: none; stroke: var(--muted); stroke-width: 1.25; stroke-linejoin: miter; }
+.sg .hex.is-done polygon { fill: var(--ink); stroke: var(--ink); }
+.sg .hex.is-cur polygon { fill: var(--pass); stroke: var(--pass); }
+.sg .sh-dots { display: inline-flex; align-items: center; gap: 6px; margin-right: 8px; vertical-align: -2px; }
+
+/* ---------- serif moments (putty rooms only) ---------- */
+.sg .sh-h em, .sg .about-h em { font-style: normal; }
+.sg .room-putty :is(.sh-h, .about-h, .pl-h) {
+  font-family: var(--font-serif), 'Times New Roman', serif;
+  font-weight: 400; text-transform: none; letter-spacing: -.02em; line-height: .9;
+}
+.sg .room-putty :is(.sh-h, .pl-h) { font-size: clamp(48px, 7.2vw, 94px); }
+.sg .room-putty .about-h { font-size: clamp(40px, 4.8vw, 68px); line-height: .96; }
+.sg .room-putty :is(.sh-h, .about-h, .pl-h) em { font-style: italic; }
+.sg .room-putty .sh-split .sh-b { padding-left: 10%; }
+
+/* ---------- stat pairs ---------- */
+.sg .stats { display: flex; flex-wrap: wrap; gap: 8px 48px; margin: -24px 0 56px; padding-top: 16px; border-top: 1px solid var(--rule-2); }
+.sg .stats > div { display: flex; gap: 8px; }
+.sg .stats dt, .sg .stats dd { font-family: var(--f-text); font-size: 16px; line-height: 20px; font-weight: 500; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+.sg .stats dt { color: var(--ink-2); }
+.sg .stats dd { color: var(--ink); margin: 0; }
+
+/* ---------- pillars: circular vignettes ---------- */
+.sg .pl { border-top: 0; background-image: none; }
+.sg .pl-h { max-width: 14ch; margin: 0 auto; text-align: center; }
+.sg .pl-grid { list-style: none; margin: 80px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 64px 48px; }
+.sg .pl-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.sg .pl-cap { font-family: var(--font-serif), 'Times New Roman', serif; font-size: 24px; line-height: 1; letter-spacing: -.01em; color: var(--ink); }
+.sg .pl-disc { position: relative; flex: none; width: 200px; height: 200px; margin: 20px 0 22px; overflow: hidden; background: #181818; outline: 1px solid var(--rule-2); outline-offset: 6px; border-radius: 50% !important; isolation: isolate; }
+.sg .pl-art { position: absolute; inset: 0; }
+.sg .pl-hexes { display: flex; gap: 8px; margin-bottom: 14px; }
+.sg .pl-t { max-width: 28ch; font-size: 16px; line-height: 23px; color: var(--ink-2); text-wrap: balance; }
+/* stack drawing: the figure without its callouts, centred in the disc */
+.sg .pl-stack .prc-fig { position: absolute; left: 50%; top: 50%; width: 176px; margin: 0; transform: translate(-50%, -50%); }
+.sg .pl-stack .prc-note { display: none; }
+/* portrait: warm grayscale over rows of green test code */
+.sg .pl-portrait img { filter: grayscale(1) sepia(.14) brightness(.92) contrast(1.05); }
+.sg .pl-code { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 3px; padding-left: 10px; font-family: var(--f-code); font-size: 9px; line-height: 12px; white-space: pre; color: var(--pass); opacity: .5; user-select: none; }
+.sg .pl-land svg { display: block; width: 100%; height: 100%; }
+@media (max-width: 1023px) { .sg .pl-grid { gap: 56px 24px; } }
+@media (max-width: 767px) {
+  .sg .pl-grid { grid-template-columns: minmax(0, 1fr); margin-top: 56px; }
+}
+
+/* ---------- footer wordmark ---------- */
+.sg .ft { overflow: hidden; }
+.sg .ft-mark { margin-top: 8px; padding-left: 1.2vw; overflow: hidden; height: 21vw; font-family: var(--font-serif), 'Times New Roman', serif; font-size: 28vw; line-height: .84; letter-spacing: -.009em; white-space: nowrap; color: var(--muted); user-select: none; pointer-events: none; }
+.sg .ft-mark span { display: block; }
+
+/* ---------- chrome over putty: nav fade, tabs, rail ---------- */
+.sg .nav::after { content: ""; position: absolute; inset: 0 0 -32px; background: linear-gradient(#c4c3b6 0%, rgba(196, 195, 182, .88) 45%, rgba(196, 195, 182, 0) 100%); opacity: 0; transition: opacity 200ms ease-in-out; pointer-events: none; }
+.sg .nav[data-room="putty"]::after { opacity: 1; }
+.sg[data-theme="contrast"] .nav::after { display: none; }
+.sg .nav-in { z-index: 1; }
+.sg:not([data-theme="contrast"]) .nav[data-room="putty"] {
+  --paper: #c4c3b6; --ink: #000000; --ink-2: #2b2a27; --muted: #4a4946;
+  --rule-2: rgba(0, 0, 0, .3); --wash: rgba(0, 0, 0, .06); --focus: #000000;
+}
+.sg .nav :is(.logo-mark, .nav-links a, .seg, .hc-tog, .b) { transition: background-color 200ms ease-in-out, color 200ms ease-in-out, border-color 200ms ease-in-out, opacity 200ms ease-in-out; }
+.sg .nav .seg button[aria-pressed="true"], .sg .nav .hc-tog[aria-pressed="true"] { transition: background-color 200ms ease-in-out, color 200ms ease-in-out; }
+.sg .rail { transition: background-color 200ms ease-in-out; }
+.sg:not([data-theme="contrast"]) .rail[data-room="putty"] { background: #000; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sg .nav::after, .sg .nav :is(.logo-mark, .nav-links a, .seg, .hc-tog, .b), .sg .rail { transition: none; }
+}
+.sg[data-theme="contrast"] .ft-mark { display: none; }

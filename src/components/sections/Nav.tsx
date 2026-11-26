@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSite } from '@/components/site/SiteProvider';
 import CommandPalette from '@/components/site/CommandPalette';
 import MobileMenu from '@/components/site/MobileMenu';
+import { watchRoom } from './pillars/roomAt';
 
 const LINKS = {
   en: [['work', 'Work'], ['quality', 'Quality'], ['skills', 'Skills'], ['about', 'About'], ['contact', 'Contact']],
@@ -19,6 +20,7 @@ export default function Nav() {
   const [palette, setPalette] = useState(false);
   const [menu, setMenu] = useState(false);
   const menuRef = useRef(false);
+  const headRef = useRef<HTMLElement>(null);
 
   useEffect(() => { menuRef.current = menu; }, [menu]);
 
@@ -40,6 +42,9 @@ export default function Nav() {
     return () => io.disconnect();
   }, []);
 
+  // Tell the CSS which room sits under the bar (putty or dark) so the fade and tabs adapt.
+  useEffect(() => watchRoom(() => 36, (room) => headRef.current?.setAttribute('data-room', room)), []);
+
   // ⌘K / Ctrl+K toggles the command palette.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -58,7 +63,7 @@ export default function Nav() {
 
   return (
     <>
-      <header className="nav">
+      <header className="nav" ref={headRef}>
         <div className="wrap nav-in">
           <a className="logo" href="#top" aria-label={es ? 'Santiago González, volver arriba' : 'Santiago González, back to top'}>
             <span className="logo-mark">SG</span><span className="logo-name">Santiago González</span>

@@ -68,6 +68,11 @@ export default function Work() {
           intro="Six projects, each with the checks it passed. Team work is labelled as team work, and private repositories show no code link."
         />
 
+        <dl className="stats" aria-label="Work in numbers">
+          <div><dt>Projects:</dt> <dd>11</dd></div>
+          <div><dt>Tests written:</dt> <dd>1,000+</dd></div>
+        </dl>
+
         <div className="g12" style={{ rowGap: 24 }}>
           {FEATURED.map((p, i) => <Card key={p.id} p={p} i={i} />)}
 

@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import RevealText from '@/components/fx/RevealText';
+import Hex from './pillars/Hex';
 
 /** Chapters in the page's build → test → ship → log → contact run. */
 const CHAPTERS = 5;
 
 /**
- * Chapter label: optional number, a row of process dots (done = cream, current = green,
- * upcoming = hollow) and the chapter word. The dots are decorative; the text reads "01 Build".
+ * Chapter label: optional number, a row of hexagons (done = filled ink, current = filled green,
+ * upcoming = outline) and the chapter word. The dots are decorative; the text reads "01 Build".
  */
 export function ChapterLabel({ n, step, label, className }: { n?: string; step: number; label: ReactNode; className?: string }) {
   return (
@@ -14,11 +15,23 @@ export function ChapterLabel({ n, step, label, className }: { n?: string; step: 
       {n ? <><span className="sh-n">{n}</span>{' '}</> : null}
       <span className="sh-dots" aria-hidden="true">
         {Array.from({ length: CHAPTERS }, (_, i) => (
-          <i key={i} className={i + 1 < step ? 'is-done' : i + 1 === step ? 'is-cur' : undefined} />
+          <Hex key={i} state={i + 1 < step ? 'done' : i + 1 === step ? 'cur' : 'next'} />
         ))}
       </span>{' '}
       <span className="sh-l">{label}</span>
     </p>
+  );
+}
+
+/** Italic last word (serif moments in putty rooms; plain in the dark rooms). A single word is italic only when `single` is set. */
+function emph(text: string, single = false): ReactNode {
+  const i = text.lastIndexOf(' ');
+  if (i < 0) return single ? <em>{text}</em> : text;
+  return (
+    <>
+      {text.slice(0, i + 1)}
+      <em>{text.slice(i + 1)}</em>
+    </>
   );
 }
 
@@ -49,10 +62,10 @@ export default function SectionHead({
       <RevealText as="h2" id={id} className={`disp-s t-h2 sh-h${split ? ' sh-split' : ''}`}>
         {split ? (
           <>
-            <span className="sh-a">{title[0]}</span> <span className="sh-b">{title[1]}</span>
+            <span className="sh-a">{title[0]}</span> <span className="sh-b">{emph(title[1], true)}</span>
           </>
         ) : (
-          title
+          emph(title)
         )}
       </RevealText>
       <p className="t-small sh-intro">{intro}</p>

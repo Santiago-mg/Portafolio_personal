@@ -48,7 +48,7 @@ export default function About() {
         </div>
         <div className="s7 t12 about-r">
           <ChapterLabel step={4} label="About" />
-          <RevealText as="h2" id="about-h" className="disp-s t-h2 about-h">Building product and raising the bar, at the same time.</RevealText>
+          <RevealText as="h2" id="about-h" className="disp-s t-h2 about-h">Building product and <em>raising the bar</em>, at the same time.</RevealText>
           <p className="t-lead">I build complete web applications with React, TypeScript and Node.js, and I take seriously the part many leave for last: proving they work. On CelularPro, a team e-commerce project, I wrote E2E suites with Serenity/JS, Playwright and Cypress, visual regression with Argos and tests driven by AI agents — all running in a Jenkins pipeline with SonarQube that deploys to Vercel. On OpenCart, a widely used open-source e-commerce platform, I fixed 37 real defects in its code that our tests found. I&apos;m looking for a team where I can build product and raise the quality bar at the same time.</p>
           <div className="spec about-spec">
             <dl className="ink-top">
